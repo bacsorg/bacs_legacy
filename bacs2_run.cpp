@@ -1,5 +1,4 @@
 #include "bacs2_run.h"
-#include <cstdlib>
 
 int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int memory_limit, int &time_used, int &memory_used, const bool redirect_stderr = true)
 {
@@ -8,6 +7,7 @@ int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int mem
 	    redir = "yes ";
 	string run_cmd = ( cfg("general.limit_run_exe") + " " + fn_in + " " + 
 		fn_out + " " + i2s( timeout ) + " " + i2s( memory_limit ) + " " + redir + cmd );
+//log.add( run_cmd.c_str( ) );
 	system( run_cmd.c_str( ) );
 	FILE * f = fopen( cfg("general.limit_run_result_file").c_str( ), "r" );
 	if ( !f )

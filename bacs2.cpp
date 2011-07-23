@@ -7,8 +7,12 @@ bool is_thread_running;
 int cf_submits_delay;
 int cf_checker_timeout;
 int cf_compiler_timeout;
+int cf_compiler_memoryout;
 int cf_job_query_period = JOB_QUERY_PERIOD;
 int cf_max_idle_time;
+
+string nstr;
+string tests_for_check;
 
 string dbg_submit_id = "";
 
@@ -220,6 +224,7 @@ bool init_config()
 	}
 	cf_submits_delay = cfgi("general.check_submits_delay");
 	cf_compiler_timeout = cfgi("general.compiler_timeout");
+	cf_compiler_memoryout = cfgi("general.compiler_memoryout");
 	cf_checker_timeout = cfgi("general.checker_timeout");
 	cf_max_idle_time = cfgi("general.max_run_idle_time");
 	return true;
@@ -242,7 +247,7 @@ int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cm
 	string pref = "lang." + str_lowercase(lang) + ".";
 	int exit_code;
 	string cmd = lang_str("compile", lang, src_file);
-	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout ) != RUN_OK)
+	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout ) != RUN_OK)
 	{
 		log.add("Error: cannot run compiler!", log.gen_data("Language", cfg(pref + "name"), "Command string", cmd));
 		return COMPILE_FAILED;
@@ -269,13 +274,13 @@ CSubmit::CSubmit(cstr _sid)
 	info = "";
 	max_time = 0; max_memory = 0;
 	test_num_failed = -1;
-	DBRow rr = db_qres(format("select problem_id, lang, solution, need_info from submit where submit_id = %s", sid.c_str()));
+	DBRow rr = db_qres(format("select problem_id, lang, solution, need_info, acm, school_result from submit where submit_id = %s", sid.c_str()));
 	if (rr.empty()) {
 		not_found = true;
 	}
 	else
 	{
-		pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1");
+		pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1"); acm=rr[4]!="0"; tests_for_check = rr[5];
 	}
 }
 
@@ -344,7 +349,7 @@ bool CSubmit::test()
 	int no_ml = cfgi( "lang." + str_lowercase( lang ) + ".no_memory_limit" );
 	if ( no_ml )
 		problem.set_no_memory_limit( );
-	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL);
+	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL, acm, test_results);
 	if (!res) status = ST_SERVER_ERROR;
 	else status = st;
 	if (problem.is_fatal_error()) fatal_error = true;
@@ -356,6 +361,7 @@ bool CSubmit::cleanup()
 	string cs = lang_str("clean", lang, src_file.name());
 	string err;
 	if (cs == "") return true;
+
 	if (run(cs, NULL, true, "", err, cf_compiler_timeout) != RUN_OK)
 	{
 		log.add("Error: error in cleanup process!", log.gen_data("Command string", cs, "Output", err));
@@ -366,9 +372,18 @@ bool CSubmit::cleanup()
 
 bool CSubmit::store_result()
 {
+	if (info.size() > 1000 && status == ST_SERVER_ERROR)
+	{
+		info = info.substr(0, 1000);
+		info += "\n... too many characters";
+	}
 	string s_info = need_info ? format(", info = '%s'", db.escape(info).c_str()) : "";
+if(acm)
 	return db_query(format("update submit set result = %li, test_num_failed = %s, max_time_used = %lf, max_memory_used = %lf%s where submit_id = %s",
 		status, (test_num_failed < 0) ? "NULL" : i2s(test_num_failed).c_str(), max_time, max_memory, s_info.c_str(), sid.c_str()));
+else
+return db_query(format("update submit set result = %li, school_result = '%s' , test_num_failed=%s, max_time_used = %lf,  max_memory_used = %lf%s where submit_id = %s", status, test_results.c_str(), (test_num_failed < 0)?"NULL" : i2s(test_num_failed).c_str(), max_time,     max_memory, s_info.c_str(), sid.c_str())); 
+
 	return true;
 }
 
@@ -405,24 +420,47 @@ bool CProblem::init(cstr _id)
 	return true;
 }
 
-bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info)
+bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm, string& test_results)
 {
 	int i;
+	int first_res = ST_ACCEPTED;
 	max_time = 0;
 	max_memory = 0;
 	test_num_failed = -1;
+test_results.clear(); 
 	for (i = 0; i < (int)test.size(); ++i)
 	{
 		double time_used, memory_used;
-		if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
-			return false;
-		if (time_used > max_time) max_time = time_used;
-		if (memory_used > max_memory) max_memory = memory_used;
+		if (acm)
+		{
+                if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
+                        return false;
+                if (time_used > max_time) max_time = time_used;
+                if (memory_used > max_memory) max_memory = memory_used;
 		if (result != ST_ACCEPTED) {
 			test_num_failed = test[i].id;
+			first_res = result;
 			break;
 		}
+		}
+ 
+		else
+		{
+		if (tests_for_check.empty() || i < (int)tests_for_check.size() && tests_for_check[i] == '1')
+		{
+		if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
+                        return false;
+                if (time_used > max_time) max_time = time_used;
+                if (memory_used > max_memory) max_memory = memory_used;
+
+		if (test_results.size())test_results.push_back(',');
+		if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
+			first_res = result;
+		test_results+=i2s(result);
+		}		
+		}
 	}
+	result = first_res;
 	return true;
 }
 
