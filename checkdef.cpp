@@ -27,13 +27,22 @@ int main(int argc, char **argv)
 	{
 		if (argc!=3+1)
 			throw std::invalid_argument("wrong argument count");
-		//std::ifstream in(argv[1]);
+		// input file [it is useless, so we don't create it]
+		/*std::ifstream in(argv[1]);
+		if (!in.good())
+			throw std::ios_base::failure("bad file: \""+std::string(argv[1])+"\"");
+		in.exceptions(std::ifstream::failbit | std::ifstream::badbit);*/
+		// output file
 		std::ifstream out(argv[2]);
-		std::ifstream cout(argv[3]);
 		if (!out.good())
-			throw std::runtime_error("bad file: \""+std::string(argv[2])+"\"");
+			throw std::ios_base::failure("bad file: \""+std::string(argv[2])+"\"");
+		out.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		// correct output file
+		std::ifstream cout(argv[3]);
 		if (!cout.good())
-			throw std::runtime_error("bad file: \""+std::string(argv[3])+"\"");
+			throw std::ios_base::failure("bad file: \""+std::string(argv[3])+"\"");
+		cout.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		// read all symbols and compare
 		char o, c;
 		while (out.get(o) && cout.get(c))
 			if (o!=c)
@@ -47,6 +56,11 @@ int main(int argc, char **argv)
 			else
 				return check_LN(out);
 		}
+	}
+	catch (std::ios_base::failure &e)
+	{
+		std::cerr<<"File error: "<<e.what()<<std::endl;
+		return UN;
 	}
 	catch (std::exception &e)
 	{
