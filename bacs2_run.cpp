@@ -1,5 +1,7 @@
 #include "bacs2_run.h"
 
+#include <cstdlib>
+
 int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int memory_limit, int &time_used, int &memory_used, const bool redirect_stderr = true)
 {
 	string redir = "no ";
