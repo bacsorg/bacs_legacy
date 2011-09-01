@@ -20,7 +20,7 @@ error_code check_LN(std::istream &in)
 	char c;
 	while (in.get(c))
 	{
-		if (c!='\n')
+		if (c!='\n' && c!='\r')
 			return WA;
 	}
 	return OK;
@@ -32,8 +32,8 @@ error_code check_equal(std::istream &out, std::istream &cout)
 	char o, c;
 	do
 	{
-		out.get(o);
-		cout.get(c);
+		while (out.get(o) && o=='\r');
+		while (cout.get(c) && c=='\r');
 		if (out && cout && o!=c)
 			return WA;
 	}
@@ -81,6 +81,13 @@ bool run_tests()
 	assert(test_equal("123", "1234")==WA);
 	assert(test_equal("123\n", "1234")==WA);
 	assert(test_equal("123\n", "123")==OK);
+	// \r
+	assert(test_equal("\r\n", "\r")==OK);
+	assert(test_equal("123", "\r123\r\n\n")==OK);
+	assert(test_equal("\r\r123\n\n\n\n\r\n", "123\n\n")==OK);
+	assert(test_equal("123\n", "123\r\n")==OK);
+	assert(test_equal("1\r2\r3", "123\n")==OK);
+	assert(test_equal("123\r\n321", "123\n321")==OK);
 	return true;
 }
 
