@@ -84,9 +84,9 @@ int main( int argn, char ** args )
 	if ( file_exists( RESULT_FILE_NAME ) )
 		system( "rm " RESULT_FILE_NAME );
 
-	if ( argn < 6 )
+	if ( argn < 7 )
 	{
-		fprintf( stderr, "Error: You should run \"limit_run in.txt out.txt TL ML RUN_FILE\"\n" );
+		fprintf( stderr, "Error: You should run \"limit_run[0] in.txt[1] out.txt[2] TL[3] ML[4] redirect_stderr(yes/no)[5] RUN_FILE[6...]\"\n" );
 		return 1;
 	}
 	
@@ -208,7 +208,8 @@ int main( int argn, char ** args )
 		dup2( fd_in, STDIN_FILENO );
 		fd_out = open( out_fn.c_str( ), O_WRONLY );
 		dup2( fd_out, STDOUT_FILENO );
-		dup2( fd_out, STDERR_FILENO );
+		if (!strcmp(args[5], "yes"))
+			dup2( fd_out, STDERR_FILENO );
 		
 		rlimit lim;
 		if ( memory_limit )
@@ -222,7 +223,7 @@ int main( int argn, char ** args )
 			setrlimit( RLIMIT_CPU, &lim );
 		}
 
-		if ( execv( args[5], args + 5 ) )
+		if ( execv( args[6], args + 6 ) )
 		{
 			fprintf( stderr, "Error: can't execve\n" );
 			return 1;		
