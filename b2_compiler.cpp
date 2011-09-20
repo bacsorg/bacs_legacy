@@ -7,14 +7,14 @@ bool is_thread_running;
 int cf_submits_delay;
 int cf_checker_timeout;
 int cf_compiler_timeout;
-int cf_compiler_memoryout;
 int cf_job_query_period = JOB_QUERY_PERIOD;
 int cf_max_idle_time;
-
-string nstr;
-string tests_for_check;
+//FILE *f_compile_log, *f_not_compiled;
 
 string dbg_submit_id = "";
+string nstr;
+
+#define dir_exists file_exists
 
 void console_display_help()
 {
@@ -103,61 +103,12 @@ string capture_new_submit()
 	return sid;
 }
 
-bool check_new_check_compiles( )
-{
-	string q = db_qres0("select 1 from compile_checkers where state = 0 limit 1");
-	return q == "1";
-}
-
-string capture_new_checker_compilation( )
-{
-	if (!lock_table()) {
-		log.add_error(__FILE__, __LINE__, "Error: cannot lock table 'submit'!");
-		return "";
-	}
-	string sid = db_qres0("select check_id from compile_checkers where state = 0 limit 1");
-	if (sid != "")
-		db_query(format("update compile_checkers set state = %d where check_id = %s", STATE_COMPILING, sid.c_str()));
-	unlock_table();
-	return sid;
-	
-}
-
-void compile_checker( const string &sid )
-{
-	string rr = db_qres0(format("select problem_id from compile_checkers where check_id = %s", sid.c_str()));
-	if (rr == "") {
-		return;
-	}
-	else
-	{
-		log.add( "Compiling checker for problem: " + rr );
-		int exit_code;
-		string error_log;
-		string cmd = cfg("general.b2_compiler") + " " + cfg("general.problem_archive_dir") + "/" + rr;
-		if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout ) != RUN_OK)
-		{
-			log.add( ("Error: cannot compile checker!" + cmd + "\n" + error_log ) );
-		}			
-	}
-}
-
 int check_thread_proc( )
 {
 	bool need_announce = true;
 	while (is_thread_running)
 	{
-		if (check_new_check_compiles( ) )
-		{
-			need_announce = true;
-			string sid = capture_new_checker_compilation( );
-			if ( sid != "" )
-			{
-				compile_checker( sid );
-			}
-		}
-		if (!check_new_submits())
-		{
+		if (!check_new_submits()) {
 			if (need_announce) {
 				log.add("Waiting for new submissions...");
 				need_announce = false;
@@ -224,7 +175,6 @@ bool init_config()
 	}
 	cf_submits_delay = cfgi("general.check_submits_delay");
 	cf_compiler_timeout = cfgi("general.compiler_timeout");
-	cf_compiler_memoryout = cfgi("general.compiler_memoryout");
 	cf_checker_timeout = cfgi("general.checker_timeout");
 	cf_max_idle_time = cfgi("general.max_run_idle_time");
 	return true;
@@ -247,7 +197,7 @@ int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cm
 	string pref = "lang." + str_lowercase(lang) + ".";
 	int exit_code;
 	string cmd = lang_str("compile", lang, src_file);
-	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout ) != RUN_OK)
+	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout ) != RUN_OK)
 	{
 		log.add("Error: cannot run compiler!", log.gen_data("Language", cfg(pref + "name"), "Command string", cmd));
 		return COMPILE_FAILED;
@@ -274,13 +224,13 @@ CSubmit::CSubmit(cstr _sid)
 	info = "";
 	max_time = 0; max_memory = 0;
 	test_num_failed = -1;
-	DBRow rr = db_qres(format("select problem_id, lang, solution, need_info, acm, school_result from submit where submit_id = %s", sid.c_str()));
+	DBRow rr = db_qres(format("select problem_id, lang, solution, need_info from submit where submit_id = %s", sid.c_str()));
 	if (rr.empty()) {
 		not_found = true;
 	}
 	else
 	{
-		pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1"); acm=rr[4]!="0"; tests_for_check = rr[5];
+		pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1");
 	}
 }
 
@@ -349,7 +299,7 @@ bool CSubmit::test()
 	int no_ml = cfgi( "lang." + str_lowercase( lang ) + ".no_memory_limit" );
 	if ( no_ml )
 		problem.set_no_memory_limit( );
-	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL, acm, test_results);
+	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL);
 	if (!res) status = ST_SERVER_ERROR;
 	else status = st;
 	if (problem.is_fatal_error()) fatal_error = true;
@@ -361,7 +311,6 @@ bool CSubmit::cleanup()
 	string cs = lang_str("clean", lang, src_file.name());
 	string err;
 	if (cs == "") return true;
-
 	if (run(cs, NULL, true, "", err, cf_compiler_timeout) != RUN_OK)
 	{
 		log.add("Error: error in cleanup process!", log.gen_data("Command string", cs, "Output", err));
@@ -372,18 +321,9 @@ bool CSubmit::cleanup()
 
 bool CSubmit::store_result()
 {
-	if (info.size() > 1000 && status == ST_SERVER_ERROR)
-	{
-		info = info.substr(0, 1000);
-		info += "\n... too many characters";
-	}
 	string s_info = need_info ? format(", info = '%s'", db.escape(info).c_str()) : "";
-if(acm)
 	return db_query(format("update submit set result = %li, test_num_failed = %s, max_time_used = %lf, max_memory_used = %lf%s where submit_id = %s",
 		status, (test_num_failed < 0) ? "NULL" : i2s(test_num_failed).c_str(), max_time, max_memory, s_info.c_str(), sid.c_str()));
-else
-return db_query(format("update submit set result = %li, school_result = '%s' , test_num_failed=%s, max_time_used = %lf,  max_memory_used = %lf%s where submit_id = %s", status, test_results.c_str(), (test_num_failed < 0)?"NULL" : i2s(test_num_failed).c_str(), max_time,     max_memory, s_info.c_str(), sid.c_str())); 
-
 	return true;
 }
 
@@ -414,53 +354,29 @@ bool CProblem::init(cstr _id)
 	if (!cf.init(cf_fn)) return false;
 	time_limit = s2d(cf.get("tl"), cfgd("general.default_time_limit"));
 	memory_limit = s2d(cf.get("ml"), cfgd("general.default_memory_limit"));
-	if (!init_iofiles()) return false;
 	if (!init_checker()) return false;
 	if (!init_tests()) return false;
 	return true;
 }
 
-bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm, string& test_results)
+bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm, string & test_results)
 {
 	int i;
-	int first_res = ST_ACCEPTED;
 	max_time = 0;
 	max_memory = 0;
 	test_num_failed = -1;
-	test_results.clear(); 
 	for (i = 0; i < (int)test.size(); ++i)
 	{
 		double time_used, memory_used;
-		if (acm)
-		{
-                if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
-                        return false;
-                if (time_used > max_time) max_time = time_used;
-                if (memory_used > max_memory) max_memory = memory_used;
+		if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
+			return false;
+		if (time_used > max_time) max_time = time_used;
+		if (memory_used > max_memory) max_memory = memory_used;
 		if (result != ST_ACCEPTED) {
 			test_num_failed = test[i].id;
-			first_res = result;
 			break;
 		}
-		}
- 
-		else
-		{
-		if (tests_for_check.empty() || i < (int)tests_for_check.size() && tests_for_check[i] == '1')
-		{
-		if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
-                        return false;
-                if (time_used > max_time) max_time = time_used;
-                if (memory_used > max_memory) max_memory = memory_used;
-
-		if (test_results.size())test_results.push_back(',');
-		if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
-			first_res = result;
-		test_results+=i2s(result);
-		}		
-		}
 	}
-	result = first_res;
 	return true;
 }
 
@@ -487,55 +403,6 @@ bool CProblem::init_tests()
 		if (t.id != INVALID_ID) test.push_back(t);
 	}
 	is_tests_init = true;
-	return true;
-}
-
-bool check_iofile_name( cstr fn )
-{
-	int n = (int)fn.size();
-	int dot_cnt = 0;
-	for ( int i = 0; i < n; ++ i )
-	{
-		if ( fn[i] >= '0' && fn[i] <= '9' )
-			continue;
-		if ( fn[i] >= 'a' && fn[i] <= 'z' )
-			continue;
-		if ( fn[i] >= 'A' && fn[i] <= 'Z' )
-			continue;
-		if ( fn[i] == '_' )
-			continue;
-		if ( fn[i] == '.' )
-		{
-			++ dot_cnt;
-			if ( dot_cnt == 2 )
-				return false;
-		}
-		else
-			return false;
-	}
-	return true;
-}
-
-bool CProblem::init_iofiles()
-{
-	input_fn = cf.get("input");
-	if ( input_fn == "" )
-		input_fn = "STDIN";
-	if ( !check_iofile_name( input_fn ) )
-	{
-		log.add("Error: input file is incorrect!", log.gen_data("Input file", input_fn ));
-		return false;
-	}
-		
-	output_fn = cf.get("output");
-	if ( output_fn == "" )
-		output_fn = "STDOUT";
-	if ( !check_iofile_name( output_fn ) )
-	{
-		log.add("Error: output file is incorrect!", log.gen_data("Output file", output_fn ));
-		return false;
-	}
-	
 	return true;
 }
 
@@ -583,7 +450,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 	int limit_ml, limit_tl;
 	limit_tl = (int)(time_limit * 1000);
 	limit_ml = (int)(memory_limit * 1024 * 1024);
-	int res = run_fio(run_cmd, &ex, tt.file_in, s_file_out, limit_tl, limit_ml, t_used, m_used, input_fn, output_fn );
+	int res = run(run_cmd, &ex, false, tt.file_in, s_file_out, limit_tl, limit_ml, t_used, m_used);
 	time_used = (double)t_used / 1000;
 	memory_used = (double)m_used / (1024 * 1024);
 	bool ok = true;
@@ -661,12 +528,95 @@ CTest::CTest(cstr _file_in)
 	id = parse_id(file_in);
 }
 
+const string CHECK_NAME = "check_new";
+/*
+void put_in_log( cstr dir, cstr info )
+{
+    fprintf( f_not_compiled, "%s\n", dir.c_str( ) );
+    fprintf( f_compile_log, "/////////////////////////////////////////////////////\n" );
+    fprintf( f_compile_log, "%s\n", dir.c_str( ) );
+    fprintf( f_compile_log, "/////////////////////////////////////////////////////\n" );
+    fprintf( f_compile_log, "%s", info.c_str( ) );
+    fprintf( f_compile_log, "/////////////////////////////////////////////////////\n\n\n" );
+} 
+*/
+string my_compile( cstr lang, cstr check_name, cstr check_dir )
+{
+	if (cfg("lang." + str_lowercase(lang) + ".name") == "")
+	{
+		log.add("Error: unknown language!", log.gen_data("Language ID", lang) );
+		return "default";
+	}
+	CTempFile src_file, run_file;
+	string run_cmd, info;
+	src_file.assign( check_name );
+	int res = compile_source( src_file.name(), lang, &run_file, run_cmd, info );
+	if (res != COMPILE_OK)
+	{
+		log.add("Error: cannot compile file!");
+		fprintf( stderr, "%s\n", info.c_str( ) );
+//		put_in_log( check_dir, "Compile error:\n" + info );
+		return "default";
+	}
+	string new_exe_name = check_dir + CHECK_NAME;
+	if ( file_exists( new_exe_name ) )
+		delete_file( new_exe_name );
+	system( ( "ln " + run_file.name( ) + " " + new_exe_name ).c_str( ) );
+	run_file.erase( );
+	return CHECK_NAME;
+}
+
+string recompile_check_lang( cstr lang, cstr check_name, cstr check_dir )
+{
+	return my_compile( lang, check_name, check_dir );	
+}
+
+string recompile_checker( cstr check_dir )
+{
+	log.add( string( "Recompiling checker in: " ) + check_dir );
+	int i;
+	FileList fl_check;
+
+	find_files( fl_check, check_dir, ".pas" );
+	if ( !fl_check.empty( ) ) 
+	{
+		string check_name = fl_check[0];
+		log.add( string( "Found checker: " ) + check_name );
+		return recompile_check_lang( "P", check_name, check_dir );
+	}
+
+	find_files( fl_check, check_dir, ".dpr" );
+	if ( !fl_check.empty( ) ) 
+	{
+		string check_name = fl_check[0];
+		log.add( string( "Found checker: " ) + check_name );
+		return recompile_check_lang( "P", check_name, check_dir );
+	}
+
+	find_files( fl_check, check_dir, ".c" );
+	if ( !fl_check.empty( ) ) 
+	{
+		string check_name = fl_check[0];
+		log.add( string( "Found checker: " ) + check_name );
+		return recompile_check_lang( "C", check_name, check_dir );
+	}
+
+	find_files( fl_check, check_dir, ".cpp" );
+	if ( !fl_check.empty( ) ) 
+	{
+		string check_name = fl_check[0];
+		log.add( string( "Found checker: " ) + check_name );
+		return recompile_check_lang( "+", check_name, check_dir );
+	}
+	
+//	put_in_log( check_dir, "Checker (dpr,pas,c,cpp) not found.\n" );
+	log.add( "Checker (*.dpr, *.pas, *.c, *.cpp ) not found" );
+	return "default";
+}
+
 int main(int argc, char **argv)
 {
-	printf("BACS2 Server version %s\n", VERSION);
-//	string ts = "/usr/bin/c++";
-//char *arg_list [] = { "c++", "-x", "c++", "/home/zhent/bacs/b2/Temp/a.tmp", "-o/home/zhent/bacs/b2/Temp/a.tmp.o" };
-//	execv( ts.c_str( ), arg_list );
+	printf("BACS2 Checker compiler\n" );
 
 	chdir(dir_from_filename(argv[0]));
 	
@@ -680,30 +630,58 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Error: cannot initialize log system!\n");
 		return 1;
 	}
-	log.add("Starting new session...");
-
-	if (!db.connect()) {
-		log.add_error(__FILE__, __LINE__, "Fatal error: cannot connect to database!");
+/*	FileList fl_arch;
+	if ( !find_dirs( fl_arch, cfg( "general.problem_archive_dir" ) + "/" ) )
+	{
+		log.add("Can't find problem archive dir content.\n");
 		return 1;
 	}
-	log.add("Connected to database.");
-	if (!start_check_thread())
-	{
-		log.add_error(__FILE__, __LINE__, "Fatal error: cannot start check thread!");
-		return 1;
-	}
-	log.add("Started check thread.");
+	
+	f_compile_log = fopen( "compile.log", "w" );
+	f_not_compiled = fopen( "not_compiled.log", "w" );
 
-	int exit_code = 0;
-	while(1)
+	int i;
+	for ( i = 0; i < (int)fl_arch.size( ); ++ i )
+*/	
+	int res = 1;
+	string problem_path = argv[1];
+	if ( dir_exists( problem_path ) )
 	{
-		char buf[256];
-		gets( buf ); //its debug
-		if (!console_process_input(buf, exit_code)) break;
+	
+		string problem_dir = problem_path + "/";
+		string check_dir = problem_dir + "checker";
+		log.add( string( "Looking for checker in dir: " ) + check_dir );
+		char tmp_buf[1000];
+		if ( dir_exists( check_dir ) )
+		{
+			string new_check_name = recompile_checker( check_dir + "/" );
+			FILE * fo = fopen( ( problem_dir + "nconf.txt" ).c_str( ), "w" );
+			FILE * f = fopen( ( problem_dir + "conf.txt" ).c_str( ), "r" );
+			if ( f != NULL && fo != NULL ) 
+			{
+				while ( fgets( tmp_buf, sizeof( tmp_buf ) - 1, f ) )
+				{
+					string str = tmp_buf;
+					trim( str );
+					int pos = (int)str.find( "checker=" );
+					if ( pos < 0 )
+						fprintf( fo, "%s", tmp_buf );
+				} 
+				fprintf( fo, "checker=%s\n", new_check_name.c_str( ) );
+			}
+			if ( f ) fclose( f );
+			if ( fo ) fclose( fo );
+			delete_file( problem_dir + "conf.txt" );
+			system( ( "mv " + problem_dir + "nconf.txt " + problem_dir + "conf.txt" ).c_str( ) );
+		}
+		res = 0;
 	}
-	log.add("Terminating check thread...");
-	end_check_thread( );
-	db.close();
+	else
+	{
+		res = 1;
+	}
+
+//	fclose( f_compile_log );
 	log.add("Finished.");
-	return exit_code;
+	return res;
 }

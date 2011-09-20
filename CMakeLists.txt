@@ -23,3 +23,9 @@ add_executable(limit_run limit_run.cpp)
 add_executable(java_compile java_compile.cpp)
 add_executable(java_clean java_clean.cpp)
 
+set(b2_srcs ${bacs_srcs})
+list(REMOVE_ITEM b2_srcs ${CMAKE_SOURCE_DIR}/bacs2.cpp)
+message("${b2_srcs}")
+add_executable(b2_compiler b2_compiler.cpp ${b2_srcs})
+target_link_libraries(b2_compiler mysqlclient)
+
