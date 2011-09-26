@@ -138,7 +138,8 @@ void compile_checker( const string &sid )
 		if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout ) != RUN_OK)
 		{
 			log.add( ("Error: cannot compile checker!" + cmd + "\n" + error_log ) );
-		}			
+		}
+		db_query(format("update compile_checkers set state=1 where check_id = %s", sid.c_str()));
 	}
 }
 
