@@ -43,6 +43,7 @@ bool CDBEngine::connect()
 {
 	close();
 	connection = mysql_init(NULL);
+	mysql_options(connection, MYSQL_OPT_RECONNECT, cfg("db.reconnect").c_str());
 	if (!mysql_real_connect(connection, cfg("db.host").c_str(), cfg("db.user").c_str(), cfg("db.pass").c_str(), cfg("db.database").c_str(), cfgi("db.port"), NULL, 0))
 	{
 		log_error(__FILE__, __LINE__);
