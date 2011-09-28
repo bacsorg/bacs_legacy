@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-exec >/tmp/b2_compiler_log
-exec 2>/tmp/b2_compiler_log
+exec >>/tmp/b2_compiler_log
+exec 2>>/tmp/b2_compiler_log
 
 ROOT="$(dirname "$0")"
 if [[ ${ROOT:0:1} != / ]]
@@ -52,7 +52,7 @@ then
 			*.cpp) compile "$1" "$i" g++ "$i" -O2 -ocheck_new -I"$TESTLIB_CPP" && break ;;
 			*.c) compile "$1" "$i" gcc "$i" -O2 -ocheck_new && break ;;
 			*.dpr) true ;&
-			*.pas) compile "$1" "$i" fpc -O2 -Fu/tmp -Fu"$TESTLIB_PAS" -I"$TESTLIB_PAS" -Mdelphi "$i" -ocheck_new && break ;;
+			*.pas) compile "$1" "$i" fpc -O2 -Fu"$TESTLIB_PAS" -I"$TESTLIB_PAS" -Mdelphi "$i" -ocheck_new && break ;;
 			*.exe) ;;
 			*.old) ;;
 			'*.*') ;;
