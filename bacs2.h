@@ -17,9 +17,23 @@
 
 using namespace std;
 
+extern int check_thread;
+extern bool is_thread_running;
+
+extern int cf_submits_delay;
+extern int cf_checker_timeout;
+extern int cf_compiler_timeout;
+extern int cf_compiler_memoryout;
+extern int cf_job_query_period;
+extern int cf_max_idle_time;
+
+extern string nstr;
+extern string tests_for_check;
+
+extern string dbg_submit_id;
+
 class CSubmit;
 class CProblem;
-extern string nstr;
 
 void console_display_help();
 bool console_process_input(cstr s, int &exit_code);

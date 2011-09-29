@@ -15,7 +15,7 @@ add_definitions(-g -Wall -Wextra)
 include_directories(${mysql_include_dir})
 link_directories(${mysql_link_dir})
 
-add_executable(${PROJECT_NAME} ${bacs_srcs})
+add_executable(${PROJECT_NAME} main.cpp ${bacs_srcs})
 target_link_libraries(${PROJECT_NAME} mysqlclient)
 
 add_executable(checkdef checkdef.cpp)

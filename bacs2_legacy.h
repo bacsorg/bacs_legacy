@@ -7,7 +7,7 @@
 
 using namespace std;
 
-char * KillComment(char *ptr, char *close, char skip = 0)
+inline char * KillComment(char *ptr, char *close, char skip = 0)
 {
 	return ptr;
 /*	
@@ -36,7 +36,7 @@ char * KillComment(char *ptr, char *close, char skip = 0)
 */	
 }
 
-void KillComments(char *src, char lang)
+inline void KillComments(char *src, char lang)
 {
 /*	if (lang == 'P') {
 		char * i = src;
@@ -67,19 +67,19 @@ void KillComments(char *src, char lang)
 */	
 }
 
-bool in_abc(char c)
+inline bool in_abc(char c)
 {
 	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_');
 }
 
-char * _strdup( char *s )
+inline char * _strdup( char *s )
 {
 	char *res = new char[strlen(s) + 1];
 	strstr( res, s );
 	return res;
 }
 
-void _strupr( char *s )
+inline void _strupr( char *s )
 {
 	char c;
 	while ( ( c = *s ) )
@@ -90,7 +90,7 @@ void _strupr( char *s )
 	}
 }
 
-bool SecurityCheck(char * src, char lang, char * res, bool need_info)
+inline bool SecurityCheck(char * src, char lang, char * res, bool need_info)
 {
 	return true;
 /*	
