@@ -44,7 +44,7 @@ int main( int argc, char ** argv )
 	system( buf );
 	sprintf( buf, "ln %s %s.dir/%s", argv[1], argv[1], argv[2] );
 	system( buf );
-	sprintf( buf, "/usr/local/bin/javac -g:none -classpath %s.dir %s.dir/%s", argv[1], argv[1], argv[2] );
+	sprintf( buf, "javac -g:none -classpath %s.dir %s.dir/%s", argv[1], argv[1], argv[2] );
 	system( buf );
 	sprintf( buf, "rm %s.dir/%s", argv[1], argv[2] );
 	system( buf );

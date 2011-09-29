@@ -31,9 +31,17 @@ compile()
 	else
 		echo "$NAME:$FILE" >>/tmp/b2_compiler_ok
 	fi
-	tmp="$(mktemp -t /tmp)"
+	case `uname` in
+		Linux) tmp="$(mktemp)" ;;
+		FreeBSD) tmp="$(mktemp -t /tmp)" ;;
+		*) echo "Unknown system type" && exit 1;;
+	esac
 	cp -p "$FULL_NAME/conf.txt" "$tmp"
-	sed -r -i "" -e "s|^checker=.*$|checker=check_new|" "$FULL_NAME/conf.txt"
+	case `uname` in
+		Linux) sed -r -i "s|^checker=.*$|checker=check_new|" "$FULL_NAME/conf.txt" ;;
+		FreeBSD) sed -r -i "" -e "s|^checker=.*$|checker=check_new|" "$FULL_NAME/conf.txt" ;;
+		*) echo "Unknown system type" && exit 1;;
+	esac
 	touch -m -r "$tmp" "$FULL_NAME/conf.txt"
 	return 0
 }

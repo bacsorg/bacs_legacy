@@ -81,31 +81,31 @@ log_file=$dst/bacs2.log
 
 (+)
 name=C++ (gnu)
-compile=/usr/bin/c++ -O3 -x c++ {src} -o{src}.o
+compile=$(which c++) -O3 -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
 
 (G)
 name=GNU C++ (same)
-compile=/usr/bin/c++ -O3 -x c++ {src} -o{src}.o
+compile=$(which c++) -O3 -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
 
 (1)
 name=C++ 11
-compile=/usr/bin/c++ -std=c++0x -O3 -x c++ {src} -o{src}.o
+compile=$(which c++) -std=c++0x -O3 -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
 
 (C)
 name=C
-compile=/usr/bin/c++ -O3 -x c {src} -o{src}.o
+compile=$(which c++) -O3 -x c {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
 
 (P)
 name=Pascal
-compile=/usr/local/bin/fpc -O2 -Mdelphi {src} -o{src}.exe
+compile=$(which fpc) -O2 -Mdelphi {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
 run=$dst/test_c++ {src}.exe
@@ -116,7 +116,7 @@ dir=$dst
 compile={dir}/java_compile {src} Main.java
 exefile={src}.dir/Main.class
 no_memory_limit=1
-run=/usr/local/bin/java -Xmx128m -Xss128m -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
+run=$(which java) -Xmx128m -Xss128m -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean={dir}/java_clean {src}
 
 ;(C)
