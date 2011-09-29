@@ -49,6 +49,11 @@ bool init_config();
 bool test_submit(cstr sid);
 string status_to_str(int status);
 
+bool check_new_check_compiles();
+string capture_new_checker_compilation();
+void compile_checker(const string &sid);
+string capture_new_submit();
+
 class CSubmit
 {
 private:
