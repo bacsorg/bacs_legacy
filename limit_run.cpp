@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #define _XOPEN_SOURCE 600
 
 #include <stdio.h>
