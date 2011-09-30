@@ -41,7 +41,6 @@ bool lock_table();
 void unlock_table();
 bool check_new_submits();
 bool test_submit(cstr sid);
-int check_thread_proc( ); //child proc
 bool start_check_thread();
 void end_check_thread();
 void wake_check_thread();

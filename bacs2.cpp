@@ -1,7 +1,6 @@
 #include "bacs2.h"
 
 int check_thread;
-//HANDLE event_wake;
 bool is_thread_running;
 
 int cf_submits_delay;

@@ -1,37 +1,41 @@
 #include "bacs2.h"
 
-void console_display_help()
-{
-	printf("\nBACS2 Server version %s\n", VERSION);
-	printf("Type 'q' to quit.\n");
-}
+#include <csignal>
+#include <cassert>
 
-bool console_process_input(cstr s, int &exit_code)
+namespace
 {
-	string q, data;
-	parse_str(s, ' ', q, data);
-	if (q == "help" || q == "?") console_display_help();
-	else if (q == "t") {
-		dbg_submit_id = data;
-		wake_check_thread();
+	sigset_t set;
+	timespec timeout;
+	bool wait_term()
+	{
+		int sig = sigtimedwait(&set, 0, &timeout);
+		return sig==-1;
 	}
-	else if (q == "q") return false;
-	else printf("\nUnknown command: %s\n", s.c_str());
-	return true;
+	void siginit()
+	{
+		sigemptyset(&set);
+		sigaddset(&set, SIGINT);
+		sigaddset(&set, SIGTERM);
+		sigaddset(&set, SIGHUP);
+		assert(sigprocmask(SIG_BLOCK, &set, 0)==0);
+		timeout.tv_sec = (cf_submits_delay+999)/1000;
+		timeout.tv_nsec = 0;//TODO not really 0
+	}
 }
 
-int check_thread_proc( )
+void check_thread_proc()
 {
 	bool need_announce = true;
 	while (is_thread_running)
 	{
-		if (check_new_check_compiles( ) )
+		if (check_new_check_compiles())
 		{
 			need_announce = true;
 			string sid = capture_new_checker_compilation( );
-			if ( sid != "" )
+			if (sid != "")
 			{
-				compile_checker( sid );
+				compile_checker(sid);
 			}
 		}
 		if (!check_new_submits())
@@ -40,63 +44,29 @@ int check_thread_proc( )
 				log.add("Waiting for new submissions...");
 				need_announce = false;
 			}
-			else log.add_working_notify();
-			//FIXME: No wake event; 
-			sleep( (cf_submits_delay + 999 ) / 1000 );
-			//WaitForSingleObject(event_wake, cf_submits_delay);
+			else
+				log.add_working_notify();
+			if (wait_term())
+				return;
 			continue;
 		}
 		need_announce = true;
 		string sid = capture_new_submit();
 		if (sid != "")
 		{
-			if (!test_submit(sid)) {
+			if (!test_submit(sid))
+			{
 				log.add_error(__FILE__, __LINE__, "Terminating check thread due to fatal error!");
-				return 1;
+				return;
 			}
 		}
 	}
-	return 0;
+	return;
 }
-
-bool start_check_thread()
-{
-	is_thread_running = true;
-	int check_thread = fork( );  
-	if ( check_thread )	
-	{
-		if ( check_thread < 0 )
-			return false;
-		return true;
-		//parent
-	}
-	else
-	{
-		//child
-		int res = check_thread_proc( );
-		exit( res );
-	}
-/*	event_wake = CreateEvent(NULL, FALSE, FALSE, NULL);
-	check_thread = CreateThread(NULL, 0, check_thread_proc, NULL, 0, NULL);
-*/
-}
-
-void end_check_thread()
-{
-	is_thread_running = false;
-	wake_check_thread();
-	kill( check_thread, 9 );
-//	CloseHandle( event_wake );
-}
-
-void wake_check_thread()
-{
-//	SetEvent(event_wake);
-}
-
 
 int main(int argc, char **argv)
 {
+	siginit();
 	printf("BACS2 Server version %s\n", VERSION);
 	//	string ts = "/usr/bin/c++";
 	//char *arg_list [] = { "c++", "-x", "c++", "/home/zhent/bacs/b2/Temp/a.tmp", "-o/home/zhent/bacs/b2/Temp/a.tmp.o" };
@@ -121,23 +91,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	log.add("Connected to database.");
-	if (!start_check_thread())
-	{
-		log.add_error(__FILE__, __LINE__, "Fatal error: cannot start check thread!");
-		return 1;
-	}
-	log.add("Started check thread.");
+
+
+	check_thread_proc();
 
 	int exit_code = 0;
-	while(1)
-	{
-		char buf[256];
-		gets( buf ); //its debug
-		if (!console_process_input(buf, exit_code)) break;
-	}
-	log.add("Terminating check thread...");
-	end_check_thread( );
 	db.close();
 	log.add("Finished.");
 	return exit_code;
 }
+
