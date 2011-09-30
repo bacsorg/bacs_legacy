@@ -10,7 +10,7 @@ namespace
 	bool wait_term()
 	{
 		int sig = sigtimedwait(&set, 0, &timeout);
-		return sig==-1;
+		return sig!=-1;
 	}
 	void siginit()
 	{
@@ -19,15 +19,15 @@ namespace
 		sigaddset(&set, SIGTERM);
 		sigaddset(&set, SIGHUP);
 		assert(sigprocmask(SIG_BLOCK, &set, 0)==0);
-		timeout.tv_sec = (cf_submits_delay+999)/1000;
-		timeout.tv_nsec = 0;//TODO not really 0
+		timeout.tv_sec = 0;
+		timeout.tv_nsec = 1000*1000*100;
 	}
 }
 
 void check_thread_proc()
 {
 	bool need_announce = true;
-	while (is_thread_running)
+	for (;;)
 	{
 		if (check_new_check_compiles())
 		{
@@ -46,8 +46,18 @@ void check_thread_proc()
 			}
 			else
 				log.add_working_notify();
-			if (wait_term())
-				return;
+			timespec cur, end;
+			clock_gettime(CLOCK_MONOTONIC, &cur);
+			end.tv_nsec = (cur.tv_nsec+(cf_submits_delay%1000)*1000000)%(1000*1000*1000);
+			end.tv_sec = cur.tv_sec+cf_submits_delay/1000+end.tv_nsec/(1000*1000*1000);
+			for (;;)
+			{
+				if (wait_term())
+					return;
+				clock_gettime(CLOCK_MONOTONIC, &cur);
+				if (cur.tv_sec>end.tv_sec || (cur.tv_sec==end.tv_sec && cur.tv_nsec>end.tv_nsec))
+					break;
+			}
 			continue;
 		}
 		need_announce = true;

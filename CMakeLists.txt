@@ -16,7 +16,7 @@ include_directories(${mysql_include_dir})
 link_directories(${mysql_link_dir})
 
 add_executable(${PROJECT_NAME} main.cpp ${bacs_srcs})
-target_link_libraries(${PROJECT_NAME} mysqlclient)
+target_link_libraries(${PROJECT_NAME} mysqlclient rt)
 
 add_executable(checkdef checkdef.cpp)
 add_executable(limit_run limit_run.cpp)

@@ -1,8 +1,5 @@
 #include "bacs2.h"
 
-int check_thread;
-bool is_thread_running;
-
 int cf_submits_delay;
 int cf_checker_timeout;
 int cf_compiler_timeout;

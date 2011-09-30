@@ -17,9 +17,6 @@
 
 using namespace std;
 
-extern int check_thread;
-extern bool is_thread_running;
-
 extern int cf_submits_delay;
 extern int cf_checker_timeout;
 extern int cf_compiler_timeout;
