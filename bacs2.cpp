@@ -195,7 +195,8 @@ bool CSubmit::compile_and_test()
 		log.add("Error: submission not found!", log.gen_data("Submission ID", sid));
 		return true;
 	}
-	if (compile()) {
+	if (compile())
+	{
 		test();
 		run_file.erase();
 	}
@@ -231,14 +232,14 @@ bool CSubmit::compile()
 	if (res != COMPILE_OK)
 	{
 		src_file.erase();
-		if (res == COMPILE_ERROR) {
+		if (res == COMPILE_ERROR)
+		{
 			status = ST_COMPILE_ERROR;
 			need_info = true;
 		}
 		else status = ST_SERVER_ERROR;
 		return false;
 	}
-	src_file.erase();
 	return true;
 }
 
@@ -548,7 +549,6 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 			ok = false;
 		}
 	}
-	s_out.erase();
 	return ok;
 }
 

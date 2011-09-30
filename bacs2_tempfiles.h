@@ -22,7 +22,7 @@ public:
 	string read(int max_size);
 	inline string name() {return _name;}
 	inline CTempFile() {file_created = false;}
-	inline ~CTempFile() { /* erase(); */ }
+	inline ~CTempFile() {erase();}
 };
 
 string gen_unique_filename();

@@ -37,20 +37,14 @@ int run_use_pipes(cstr cmd, int *exit_code, cstr data_in, string &data_out, int 
 	CTempFile tf_in, tf_out;
 	if (!tf_in.create(data_in)) {
 		log.add_error(__FILE__, __LINE__, "Error: cannot write input data to temp file!");
-		tf_in.erase();
-		tf_out.erase();
 		return RUN_FAILED;
 	}
 	if (!tf_out.create("")) {
 		log.add_error(__FILE__, __LINE__, "Error: cannot create output temp file!");
-		tf_in.erase();
-		tf_out.erase();
 		return RUN_FAILED;
 	}
 	int result = _run(cmd, exit_code, tf_in.name(), tf_out.name(), timeout, memory_limit, time_used, memory_used, redirect_stderr);
 	data_out = tf_out.read(cfgi("general.max_run_out_size"));
-	tf_in.erase();
-	tf_out.erase();
 	return result;
 /*	if (result != RUN_FAILED)
 	{
@@ -114,8 +108,6 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 	{
 		if (!tf_in.create("")) {
 			log.add_error(__FILE__, __LINE__, "Error: cannot create input temp file!");
-			tf_in.erase();
-			tf_out.erase();
 			return RUN_FAILED;
 		}
 		//now we must hardlink testfile to input_fn
@@ -131,10 +123,9 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 	{
 		in_fn = file_in;
 	}
-	if (!tf_out.create("")) {
+	if (!tf_out.create(""))
+	{
 		log.add_error(__FILE__, __LINE__, "Error: cannot create output temp file!");
-		tf_in.erase();
-		tf_out.erase();
 		return RUN_FAILED;
 	}
 	if (output_fn != "STDOUT")
