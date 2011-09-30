@@ -39,17 +39,8 @@ bool CTempFile::erase()
 {
 	if (file_created)
 	{
-		if (!delete_file(_name))
-		{
-			if (!file_exists(_name))
-			{
-				file_created = false;
-				return true;
-			}
-			return false;
-		}
 		file_created = false;
-		return true;
+		return delete_file(_name) || !file_exists(_name);
 	}
 	return true;
 }
@@ -62,31 +53,16 @@ string CTempFile::read(int max_size)
 	ifstream file(_name.c_str(), ios::in | ios::binary | ios::ate);
 	if (file.is_open())
 	{
-    	ifstream::pos_type sz = file.tellg();
+		ifstream::pos_type sz = file.tellg();
 		int size = sz;
 		if (max_size && (int)size > max_size)
-			size = max_size;
-		char * memblock = new char [size];
-		file.seekg (0, ios::beg);
+		size = max_size;
+		char *memblock = new char[size];
+		file.seekg(0, ios::beg);
 		file.read(memblock, size);
 		res.assign(memblock, size);
-	    file.close();
-	    delete [] memblock;
+		file.close();
+		delete [] memblock;
 	}
-/*
-	HANDLE fh = CreateFile(_name.c_str(), FILE_READ_DATA, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	DWORD size = GetFileSize(fh, NULL);
-	if (size == INVALID_FILE_SIZE) {
-		CloseHandle(fh);
-		return "";
-	}
-	if (max_size && (int)size > max_size) size = max_size;
-	char *buf = new char[size];
-	DWORD read = 0;
-	string res = "";
-	ReadFile(fh, buf, size, &read, NULL);
-	if (read > 0) res.assign(buf, read);
-	delete [] buf;
-	CloseHandle(fh);
-*/	return res;
+	return res;
 }
