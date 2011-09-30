@@ -37,8 +37,10 @@ bool CTempFile::create(cstr source)
 
 bool CTempFile::erase()
 {
-	if (file_created) {
-		if (!delete_file(_name.c_str())) {
+	if (file_created)
+	{
+		if (!delete_file(_name))
+		{
 			if (!file_exists(_name))
 			{
 				file_created = false;
