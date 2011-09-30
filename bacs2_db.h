@@ -27,9 +27,9 @@ private:
 public:
 	CDBQuery(cstr s);
 	~CDBQuery();
-	int error() {return _error;}
-	bool ok() {return _error == 0;}
-	bool next_row(DBRow &row);
+	inline int error() {return _error;}
+	inline bool ok() {return _error == 0;}
+	inline bool next_row(DBRow &row);
 };
 
 class CDBEngine

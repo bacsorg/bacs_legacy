@@ -10,7 +10,7 @@ using namespace std;
 inline char * KillComment(char *ptr, char *close, char skip = 0)
 {
 	return ptr;
-/*	
+/*
 	while (*ptr)
 	{
 		if (*ptr == skip)
@@ -33,7 +33,7 @@ inline char * KillComment(char *ptr, char *close, char skip = 0)
 		++ptr;
 	}
 	return ptr;
-*/	
+*/
 }
 
 inline void KillComments(char *src, char lang)
@@ -64,7 +64,7 @@ inline void KillComments(char *src, char lang)
 			else ++i;
 		}
 	}
-*/	
+*/
 }
 
 inline bool in_abc(char c)
@@ -72,28 +72,28 @@ inline bool in_abc(char c)
 	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_');
 }
 
-inline char * _strdup( char *s )
+inline char * _strdup(char *s)
 {
 	char *res = new char[strlen(s) + 1];
-	strstr( res, s );
+	strstr(res, s);
 	return res;
 }
 
-inline void _strupr( char *s )
+inline void _strupr(char *s)
 {
 	char c;
-	while ( ( c = *s ) )
+	while ((c = *s))
 	{
-		if ( c >= 'a' && c <= 'z' )
+		if (c >= 'a' && c <= 'z')
 			*s = c - 'a' + 'A';
-		++ s;		
+		++s;
 	}
 }
 
 inline bool SecurityCheck(char * src, char lang, char * res, bool need_info)
 {
 	return true;
-/*	
+/*
 	char * ss = _strdup(src);
 	int sl = (int)strlen(ss);
 	if (lang == 'P') _strupr(ss);
@@ -113,7 +113,7 @@ inline bool SecurityCheck(char * src, char lang, char * res, bool need_info)
 			int p = (int)(ptr - ss);
 			int bufl = (int)strlen(buf);
 			//sorry for the hotfix of ##
-			if ( in_abc( buf[0] ) && ((p && in_abc(ss[p - 1])) || ((p + bufl < sl) && in_abc(ss[p + bufl])))) continue;
+			if (in_abc(buf[0]) && ((p && in_abc(ss[p - 1])) || ((p + bufl < sl) && in_abc(ss[p + bufl])))) continue;
 			if (need_info) strcpy(res, buf);
 			delete [] ss;
 			return false;

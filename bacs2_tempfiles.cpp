@@ -26,7 +26,7 @@ bool CTempFile::create(cstr source)
 {
 	string fn = gen_unique_filename();
 	FILE *f;
-	f = fopen( fn.c_str(), "wb");
+	f = fopen(fn.c_str(), "wb");
 	if (!f) return false;
 	fwrite((const void *)source.c_str(), source.length(), 1, f);
 	fclose(f);
@@ -52,26 +52,26 @@ bool CTempFile::erase()
 	return true;
 }
 
-string CTempFile::read( int max_size )
+string CTempFile::read(int max_size)
 {
 	string res = "";
-	if ( !file_created )
+	if (!file_created)
 		return res;
-	ifstream file( _name.c_str( ), ios::in | ios::binary | ios::ate );
-	if ( file.is_open( ) )
+	ifstream file(_name.c_str(), ios::in | ios::binary | ios::ate);
+	if (file.is_open())
 	{
     	ifstream::pos_type sz = file.tellg();
 		int size = sz;
-		if ( max_size && (int)size > max_size )
+		if (max_size && (int)size > max_size)
 			size = max_size;
 		char * memblock = new char [size];
 		file.seekg (0, ios::beg);
-		file.read( memblock, size );
-		res.assign( memblock, size );
-	    file.close( );
+		file.read(memblock, size);
+		res.assign(memblock, size);
+	    file.close();
 	    delete [] memblock;
 	}
-/*	
+/*
 	HANDLE fh = CreateFile(_name.c_str(), FILE_READ_DATA, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	DWORD size = GetFileSize(fh, NULL);
 	if (size == INVALID_FILE_SIZE) {

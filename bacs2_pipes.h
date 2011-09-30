@@ -20,8 +20,8 @@ public:
 	void pclose();
 	bool pwrite(cstr s);
 	bool pread(string &s);
-	int h_in() { return fd[1]; }
-	int h_out() { return fd[0]; }
+	inline int h_in() { return fd[1]; }
+	inline int h_out() { return fd[0]; }
 };
 
 #endif

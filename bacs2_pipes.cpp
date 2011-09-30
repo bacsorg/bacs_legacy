@@ -13,8 +13,8 @@ CPipe::~CPipe()
 
 bool CPipe::pinit()
 {
-	pclose( );
-	is_init = pipe( fd );
+	pclose();
+	is_init = pipe(fd);
 	return is_init;
 }
 
@@ -22,8 +22,8 @@ void CPipe::pclose()
 {
 	if (is_init)
 	{
-		close( fd[0] );
-		close( fd[1] );
+		close(fd[0]);
+		close(fd[1]);
 		is_init = false;
 	}
 }
@@ -31,8 +31,8 @@ void CPipe::pclose()
 bool CPipe::pwrite(cstr s)
 {
 	if (!is_init) return false;
-	int written = write( fd[1], s.c_str( ), (int)s.length() );
-	if ( written != (int)s.length( ) )
+	int written = write(fd[1], s.c_str(), (int)s.length());
+	if (written != (int)s.length())
 	{
 		log.add_error(__FILE__, __LINE__, "Error: pipe write error!");
 		return false;

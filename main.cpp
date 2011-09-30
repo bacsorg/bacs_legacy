@@ -32,7 +32,7 @@ void check_thread_proc()
 		if (check_new_check_compiles())
 		{
 			need_announce = true;
-			string sid = capture_new_checker_compilation( );
+			string sid = capture_new_checker_compilation();
 			if (sid != "")
 			{
 				compile_checker(sid);
@@ -80,10 +80,10 @@ int main(int argc, char **argv)
 	printf("BACS2 Server version %s\n", VERSION);
 	//	string ts = "/usr/bin/c++";
 	//char *arg_list [] = { "c++", "-x", "c++", "/home/zhent/bacs/b2/Temp/a.tmp", "-o/home/zhent/bacs/b2/Temp/a.tmp.o" };
-	//	execv( ts.c_str( ), arg_list );
+	//	execv(ts.c_str(), arg_list);
 
 	chdir(dir_from_filename(argv[0]));
-	
+
 	if (!init_config())
 	{
 		return 1;

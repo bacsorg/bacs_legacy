@@ -79,13 +79,13 @@ string capture_new_submit()
 	return sid;
 }
 
-bool check_new_check_compiles( )
+bool check_new_check_compiles()
 {
 	string q = db_qres0("select 1 from compile_checkers where state = 0 limit 1");
 	return q == "1";
 }
 
-string capture_new_checker_compilation( )
+string capture_new_checker_compilation()
 {
 	if (!lock_table()) {
 		log.add_error(__FILE__, __LINE__, "Error: cannot lock table 'submit'!");
@@ -96,10 +96,9 @@ string capture_new_checker_compilation( )
 		db_query(format("update compile_checkers set state = %d where check_id = %s", STATE_COMPILING, sid.c_str()));
 	unlock_table();
 	return sid;
-	
 }
 
-void compile_checker( const string &sid )
+void compile_checker(const string &sid)
 {
 	string rr = db_qres0(format("select problem_id from compile_checkers where check_id = %s", sid.c_str()));
 	if (rr == "") {
@@ -107,13 +106,13 @@ void compile_checker( const string &sid )
 	}
 	else
 	{
-		log.add( "Compiling checker for problem: " + rr );
+		log.add("Compiling checker for problem: " + rr);
 		int exit_code;
 		string error_log;
 		string cmd = cfg("general.b2_compiler") + " " + cfg("general.problem_archive_dir") + "/" + rr;
-		if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout ) != RUN_OK)
+		if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout) != RUN_OK)
 		{
-			log.add( ("Error: cannot compile checker!" + cmd + "\n" + error_log ) );
+			log.add(("Error: cannot compile checker!" + cmd + "\n" + error_log));
 		}
 		db_query(format("update compile_checkers set state=1 where check_id = %s", sid.c_str()));
 	}
@@ -150,7 +149,7 @@ int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cm
 	string pref = "lang." + str_lowercase(lang) + ".";
 	int exit_code;
 	string cmd = lang_str("compile", lang, src_file);
-	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout ) != RUN_OK)
+	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout) != RUN_OK)
 	{
 		log.add("Error: cannot run compiler!", log.gen_data("Language", cfg(pref + "name"), "Command string", cmd));
 		return COMPILE_FAILED;
@@ -191,7 +190,7 @@ bool CSubmit::compile_and_test()
 {
 	log.add(format("Testing submission [%s]", sid.c_str()));
 
-	if (not_found) 
+	if (not_found)
 	{
 		log.add("Error: submission not found!", log.gen_data("Submission ID", sid));
 		return true;
@@ -203,8 +202,11 @@ bool CSubmit::compile_and_test()
 	cleanup();
 	store_result();
 
-	log.add(format("Finished testing [%s]", sid.c_str()), log.gen_data("Result", status_to_str(status), "Failed on test", i2s(test_num_failed), "Time used", format("%.3lf", max_time), "Memory used", format("%.3lf", max_memory)));
-	
+	log.add(format("Finished testing [%s]", sid.c_str()),
+		log.gen_data("Result", status_to_str(status),
+		"Failed on test", i2s(test_num_failed),
+		"Time used", format("%.3lf", max_time), "Memory used", format("%.3lf", max_memory)));
+
 	return !fatal_error;
 }
 
@@ -249,9 +251,9 @@ bool CSubmit::test()
 		return false;
 	}
 	int st;
-	int no_ml = cfgi( "lang." + str_lowercase( lang ) + ".no_memory_limit" );
-	if ( no_ml )
-		problem.set_no_memory_limit( );
+	int no_ml = cfgi("lang." + str_lowercase(lang) + ".no_memory_limit");
+	if (no_ml)
+		problem.set_no_memory_limit();
 	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL, acm, test_results);
 	if (!res) status = ST_SERVER_ERROR;
 	else status = st;
@@ -289,7 +291,7 @@ bool CSubmit::store_result()
 		return db_query(format("update submit set result = %li, school_result = '%s'"
 			" , test_num_failed=%s, max_time_used = %lf,  max_memory_used = %lf%s where submit_id = %s",
 			status, test_results.c_str(), (test_num_failed < 0)?"NULL" : i2s(test_num_failed).c_str(), max_time,
-			max_memory, s_info.c_str(), sid.c_str())); 
+			max_memory, s_info.c_str(), sid.c_str()));
 
 	return true;
 }
@@ -334,37 +336,39 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
 	max_time = 0;
 	max_memory = 0;
 	test_num_failed = -1;
-	test_results.clear(); 
+	test_results.clear();
 	for (i = 0; i < (int)test.size(); ++i)
 	{
 		double time_used, memory_used;
 		if (acm)
 		{
-                if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
-                        return false;
-                if (time_used > max_time) max_time = time_used;
-                if (memory_used > max_memory) max_memory = memory_used;
-		if (result != ST_ACCEPTED) {
-			test_num_failed = test[i].id;
-			first_res = result;
-			break;
+			if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
+				return false;
+			if (time_used > max_time) max_time = time_used;
+				if (memory_used > max_memory) max_memory = memory_used;
+					if (result != ST_ACCEPTED)
+					{
+						test_num_failed = test[i].id;
+						first_res = result;
+						break;
+					}
 		}
-		}
- 
 		else
 		{
-		if (tests_for_check.empty() || i < (int)tests_for_check.size() && tests_for_check[i] == '1')
-		{
-		if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
-                        return false;
-                if (time_used > max_time) max_time = time_used;
-                if (memory_used > max_memory) max_memory = memory_used;
-
-		if (test_results.size())test_results.push_back(',');
-		if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
-			first_res = result;
-		test_results+=i2s(result);
-		}		
+			if (tests_for_check.empty() || i < (int)tests_for_check.size() && tests_for_check[i] == '1')
+			{
+				if (!run_test(test[i], run_cmd, src_lang, result, time_used, memory_used, info))
+					return false;
+				if (time_used > max_time)
+					max_time = time_used;
+				if (memory_used > max_memory)
+					max_memory = memory_used;
+				if (test_results.size())
+					test_results.push_back(',');
+				if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
+					first_res = result;
+				test_results+=i2s(result);
+			}
 		}
 	}
 	result = first_res;
@@ -397,24 +401,24 @@ bool CProblem::init_tests()
 	return true;
 }
 
-bool check_iofile_name( cstr fn )
+bool check_iofile_name(cstr fn)
 {
 	int n = (int)fn.size();
 	int dot_cnt = 0;
-	for ( int i = 0; i < n; ++ i )
+	for (int i = 0; i < n; ++ i)
 	{
-		if ( fn[i] >= '0' && fn[i] <= '9' )
+		if (fn[i] >= '0' && fn[i] <= '9')
 			continue;
-		if ( fn[i] >= 'a' && fn[i] <= 'z' )
+		if (fn[i] >= 'a' && fn[i] <= 'z')
 			continue;
-		if ( fn[i] >= 'A' && fn[i] <= 'Z' )
+		if (fn[i] >= 'A' && fn[i] <= 'Z')
 			continue;
-		if ( fn[i] == '_' )
+		if (fn[i] == '_')
 			continue;
-		if ( fn[i] == '.' )
+		if (fn[i] == '.')
 		{
 			++ dot_cnt;
-			if ( dot_cnt == 2 )
+			if (dot_cnt == 2)
 				return false;
 		}
 		else
@@ -426,23 +430,23 @@ bool check_iofile_name( cstr fn )
 bool CProblem::init_iofiles()
 {
 	input_fn = cf.get("input");
-	if ( input_fn == "" )
+	if (input_fn == "")
 		input_fn = "STDIN";
-	if ( !check_iofile_name( input_fn ) )
+	if (!check_iofile_name(input_fn))
 	{
-		log.add("Error: input file is incorrect!", log.gen_data("Input file", input_fn ));
+		log.add("Error: input file is incorrect!", log.gen_data("Input file", input_fn));
 		return false;
 	}
-		
+
 	output_fn = cf.get("output");
-	if ( output_fn == "" )
+	if (output_fn == "")
 		output_fn = "STDOUT";
-	if ( !check_iofile_name( output_fn ) )
+	if (!check_iofile_name(output_fn))
 	{
-		log.add("Error: output file is incorrect!", log.gen_data("Output file", output_fn ));
+		log.add("Error: output file is incorrect!", log.gen_data("Output file", output_fn));
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -490,7 +494,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 	int limit_ml, limit_tl;
 	limit_tl = (int)(time_limit * 1000);
 	limit_ml = (int)(memory_limit * 1024 * 1024);
-	int res = run_fio(run_cmd, &ex, tt.file_in, s_file_out, limit_tl, limit_ml, t_used, m_used, input_fn, output_fn );
+	int res = run_fio(run_cmd, &ex, tt.file_in, s_file_out, limit_tl, limit_ml, t_used, m_used, input_fn, output_fn);
 	time_used = (double)t_used / 1000;
 	memory_used = (double)m_used / (1024 * 1024);
 	bool ok = true;
@@ -517,7 +521,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 		{
 			if (info && checker_out != "") *info += "\n === CHECKER OUTPUT ===\n" + checker_out;
 			if (ex == CHECK_RES_OK) result = ST_ACCEPTED;
-			else if (ex == CHECK_RES_WA || ex == CHECK_RES_WA_OLD ) result = ST_WRONG_ANSWER;
+			else if (ex == CHECK_RES_WA || ex == CHECK_RES_WA_OLD) result = ST_WRONG_ANSWER;
 			else if (ex == CHECK_RES_PE) result = ST_PRESENTATION_ERROR;
 			else {
 				log.add_error(__FILE__, __LINE__, "Error: checker has returned unexpected result!", log.gen_data("Result code", i2s(ex)));
@@ -539,7 +543,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 			result = ST_RUNTIME_ERROR;
 		}
 		else {
-			log.add_error(__FILE__, __LINE__, "Error: unexpected run() result!", log.gen_data("Result", i2s(res))); 
+			log.add_error(__FILE__, __LINE__, "Error: unexpected run() result!", log.gen_data("Result", i2s(res)));
 			result = ST_SERVER_ERROR;
 			ok = false;
 		}
@@ -548,7 +552,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 	return ok;
 }
 
-void CProblem::set_no_memory_limit( )
+void CProblem::set_no_memory_limit()
 {
 	memory_limit = 0.;
 }

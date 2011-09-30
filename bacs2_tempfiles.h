@@ -18,11 +18,11 @@ private:
 public:
 	bool create(cstr source = "");
 	bool erase();
-	void assign(cstr filename) {_name = filename; file_created = true;}
+	inline void assign(cstr filename) {_name = filename; file_created = true;}
 	string read(int max_size);
-	string name() {return _name;}
-	CTempFile() {file_created = false;}
-	~CTempFile( ) { /* erase( ); */ }
+	inline string name() {return _name;}
+	inline CTempFile() {file_created = false;}
+	inline ~CTempFile() { /* erase(); */ }
 };
 
 string gen_unique_filename();

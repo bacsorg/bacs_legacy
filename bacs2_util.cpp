@@ -7,7 +7,7 @@ string get_time_str()
 {
     struct tm *newTime;
     time_t szClock;
-    
+
 	time(&szClock);
     newTime = localtime(&szClock);
     string res = asctime(newTime);
@@ -45,7 +45,7 @@ string format(const char *q, ...)
 
 string vformat(const char *q, va_list args)
 {
-	vsprintf( big_buf, q, args );
+	vsprintf(big_buf, q, args);
 	string res = big_buf;
 	return res;
 }
@@ -65,7 +65,7 @@ void parse_str(cstr s, char x, string &s1, string &s2)
 	}
 }
 
-bool is_whitespace( char c )
+bool is_whitespace(char c)
 {
 	return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
@@ -74,9 +74,9 @@ void trim(string &s)
 {
 	int x, y;
 	x = 0;
-	while (x < (int)s.length() && is_whitespace( s[x] ) ) ++x;
+	while (x < (int)s.length() && is_whitespace(s[x])) ++x;
 	y = (int)s.length() - 1;
-	while (y >= 0 && is_whitespace( s[y] ) ) --y;
+	while (y >= 0 && is_whitespace(s[y])) --y;
 	if (x <= y)
 		s = s.substr(x, y - x + 1);
 	else s = "";
@@ -97,11 +97,11 @@ bool file_exists(cstr fn)
   int intStat;
 
   // Attempt to get the file attributes
-  intStat = stat( fn.c_str(), &stFileInfo );
+  intStat = stat(fn.c_str(), &stFileInfo);
   if(intStat == 0) {
     // We were able to get the file attributes
     // so the file obviously exists.
-    blnReturn = !S_ISDIR( stFileInfo.st_mode );
+    blnReturn = !S_ISDIR(stFileInfo.st_mode);
   } else {
     // We were not able to get the file attributes.
     // This may mean that we don't have permission to
@@ -111,7 +111,7 @@ bool file_exists(cstr fn)
     // more details on why stat failed.
     blnReturn = false;
   }
-  
+
   return (blnReturn);
 /*
 	WIN32_FIND_DATA data;
@@ -141,7 +141,7 @@ void str_replace(string &s, cstr subs, cstr news)
 
 int random(int max_num)
 {
-	long int rnd = random( );
+	long int rnd = random();
 	return (int)((double)rnd / (double)RAND_MAX * max_num);
 }
 
@@ -165,21 +165,21 @@ bool find_files(FileList &list, cstr fn, cstr ext)
 	string dir = dir_from_filename(fn) + "/";
     DIR *dp;
     struct dirent *dirp;
-    if ( ( dp  = opendir( dir.c_str( ) ) ) == NULL )
+    if ((dp  = opendir(dir.c_str())) == NULL)
     {
     	//so i think file not found
         return true;
     }
 
-    while ( ( dirp = readdir( dp ) ) != NULL )
+    while ((dirp = readdir(dp)) != NULL)
     {
     	string nfn = dir + dirp->d_name;
-    	if ( (int)nfn.find( ext ) < 0 )
+    	if ((int)nfn.find(ext) < 0)
     		continue;
-    	if ( file_exists( nfn ) )
-        	list.push_back( nfn );
+    	if (file_exists(nfn))
+        	list.push_back(nfn);
     }
-    closedir( dp );
+    closedir(dp);
     return true;
 /*
 	HANDLE h;
@@ -188,10 +188,10 @@ bool find_files(FileList &list, cstr fn, cstr ext)
 	list.clear();
 	string dir = dir_from_filename(fn) + "\\";
 	h = FindFirstFile(fn.c_str(), &data);
-	if (h != INVALID_HANDLE_VALUE) 
+	if (h != INVALID_HANDLE_VALUE)
 	{
 		find_files_add(list, dir, data);
-		while (FindNextFile(h, &data) != 0) 
+		while (FindNextFile(h, &data) != 0)
 		{
 			find_files_add(list, dir, data);
 		}
@@ -208,10 +208,10 @@ bool find_files(FileList &list, cstr fn, cstr ext)
 
 bool delete_file(cstr filename)
 {
-	return remove( filename.c_str() ) != 0;
+	return remove(filename.c_str()) != 0;
 }
 
 void chdir(cstr dir)
 {
-	chdir( dir.c_str() );
+	chdir(dir.c_str());
 }

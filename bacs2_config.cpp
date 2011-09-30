@@ -69,7 +69,7 @@ bool CCfgEngine::init(cstr _filename)
 	FILE *f;
 
 	filename = _filename;
-	f = fopen( filename.c_str(), "r");
+	f = fopen(filename.c_str(), "r");
 	if (!f) return false;
 	line = 0;
 	pref1 = "";

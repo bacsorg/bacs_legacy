@@ -21,7 +21,7 @@ private:
 	void parse_line(cstr s);
 public:
 	bool init(cstr _filename);
-	string get(cstr key) {return table[key];}
+	inline string get(cstr key) {return table[key];}
 };
 
 string cfg(cstr key);

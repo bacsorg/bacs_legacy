@@ -100,13 +100,13 @@ class CProblem
 	bool init_tests();
 	CCfgEngine cf;
 public:
-	void set_no_memory_limit( );
-	bool is_fatal_error() {return fatal_error;}
+	void set_no_memory_limit();
+	inline bool is_fatal_error() {return fatal_error;}
 	CProblem();
 	bool init(cstr _id);
 	bool run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm=true, string & test_results = nstr);
 	bool run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &result, double &time_used, double &memory_used, string *info);
-	bool dbg_init_tests() {return init_tests();}
+	inline bool dbg_init_tests() {return init_tests();}
 };
 
 extern int check_thread;

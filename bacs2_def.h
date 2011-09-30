@@ -10,7 +10,7 @@ using namespace std;
 
 typedef const string & cstr;
 
-#define VERSION "2.2.alpha *fu_bsd"
+#define VERSION "2.3.alpha Linux"
 
 #define CONFIG_FILE_NAME "bacs2.conf"
 

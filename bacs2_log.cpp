@@ -71,7 +71,7 @@ bool CLogEngine::init()
 	else return false;
 	if (is_fout) {
 		string fn = cfg("log.log_file");
-		f = fopen( fn.c_str(), "a" );
+		f = fopen(fn.c_str(), "a");
 		if (!f)	return false;
 	}
 	is_init = true;

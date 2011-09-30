@@ -24,7 +24,7 @@ public:
 	~CLogEngine();
 	bool init();
 	void close();
-	const LogEntryData& no_data() {return _no_data;}
+	inline const LogEntryData& no_data() {return _no_data;}
 	void add(cstr text, const LogEntryData &data = _no_data);
 	void add_error(cstr file, int line, cstr text, LogEntryData data = _no_data);
 	void add_working_notify();
