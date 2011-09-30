@@ -83,7 +83,7 @@ int main(int argn, char ** args)
 	chdir(dir_from_filename(args[0]).c_str());
 
 	if (file_exists(RESULT_FILE_NAME))
-		system("rm " RESULT_FILE_NAME);
+		unlink(RESULT_FILE_NAME);
 
 	if (argn < 7)
 	{

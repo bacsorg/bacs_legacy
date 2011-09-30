@@ -10,7 +10,9 @@ int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int mem
 	string run_cmd = (cfg("general.limit_run_exe")+" "+fn_in+" "+
 		fn_out+" "+i2s(timeout)+" "+i2s(memory_limit)+" "+redir+cmd);
 	//log.add(run_cmd.c_str());
-	system(run_cmd.c_str());
+	int ret = system(run_cmd.c_str());
+	if (!WIFEXITED(ret) || WEXITSTATUS(ret)!=0)
+		return RUN_FAILED;
 	FILE * f = fopen(cfg("general.limit_run_result_file").c_str(), "r");
 	if (!f)
 	{
@@ -24,7 +26,8 @@ int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int mem
 		log.add_error(__FILE__, __LINE__, "Cannot read run result!", log.gen_data("Command string", cmd));
 		res = RUN_FAILED;
 	}
-	if (exit_code) *exit_code = ex_code;
+	if (exit_code)
+		*exit_code = ex_code;
 	fclose(f);
 	return res;
 }
@@ -116,8 +119,12 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 			return RUN_FAILED;
 		}
 		//now we must hardlink testfile to input_fn
-		system((string("ln ") + file_in + " " + full_input_fn).c_str());
-		system((string("chmod 664 ") + full_input_fn).c_str());
+		int ret = link(file_in.c_str(), full_input_fn.c_str());
+		if (ret)
+			return RUN_FAILED;
+		ret = chmod(full_input_fn.c_str(), 0664);
+		if (ret)
+			return RUN_FAILED;
 		in_fn = tf_in.name();
 	}
 	else
@@ -135,7 +142,9 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 		//creating and clearing output file
 		FILE *f = fopen(full_output_fn.c_str(), "wb");
 		fclose(f);
-		system((string("chmod 662 ") + full_output_fn).c_str());
+		int ret = chmod(full_output_fn.c_str(), 0662);
+		if (ret)
+			return RUN_FAILED;
 	}
 	//preparing done, lets run
 	file_out = tf_out.name();
@@ -145,7 +154,9 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 		//need read from output
 		if (file_exists(full_output_fn))
 		{
-			system((string("mv ") + full_output_fn + " " + file_out).c_str());
+			int ret = rename(full_output_fn.c_str(), file_out.c_str());
+			if (ret)
+				return RUN_FAILED;
 		}
 		else
 		{
@@ -157,7 +168,9 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 	if (input_fn != "STDIN")
 	{
 		tf_in.erase();
-		system((string("rm ") + full_input_fn).c_str());
+		int ret = unlink(full_input_fn.c_str());
+		if (ret)
+			return RUN_FAILED;
 	}
 	return result;
 }
