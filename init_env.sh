@@ -58,6 +58,7 @@ default_memory_limit=128
 limit_run_exe=$dst/limit_run
 limit_run_result_file=$dst/lim_run_results.txt
 temp_dir=$dst/Temp
+test_dir=$dst/Test
 b2_compiler=$sources/b2_compiler
 problem_archive_dir=$archive
 default_checker=$dst/checkdef
