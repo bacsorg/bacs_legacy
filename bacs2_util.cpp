@@ -1,7 +1,7 @@
 #include "bacs2_util.h"
 
-const int MAX_BIG_BUF = 1<<16 + 1;
-char big_buf[MAX_BIG_BUF];
+static const int MAX_BIG_BUF = 1<<16 + 1;
+static char big_buf[MAX_BIG_BUF];
 
 string get_time_str()
 {
@@ -45,7 +45,7 @@ string format(const char *q, ...)
 
 string vformat(const char *q, va_list args)
 {
-	vsprintf(big_buf, q, args);
+	vsnprintf(big_buf, MAX_BIG_BUF, q, args);//TODO will not write more than MAX_BIG_BUF
 	string res = big_buf;
 	return res;
 }
