@@ -139,6 +139,7 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 	}
 	//preparing done, lets run
 	file_out = tf_out.name();
+	tf_out.detach();
 	int result = _run(cmd, exit_code, in_fn, file_out, timeout, memory_limit, time_used, memory_used, false);
 	if (output_fn != "STDOUT")
 	{

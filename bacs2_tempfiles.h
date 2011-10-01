@@ -20,6 +20,7 @@ public:
 	bool erase();
 	inline void assign(cstr filename) {_name = filename; file_created = true;}
 	string read(int max_size);
+	inline void detach() {file_created = false;}
 	inline string name() {return _name;}
 	inline CTempFile() {file_created = false;}
 	inline ~CTempFile() {erase();}
