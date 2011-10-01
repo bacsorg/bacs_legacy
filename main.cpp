@@ -7,20 +7,30 @@ namespace
 {
 	sigset_t set;
 	timespec timeout;
-	bool wait_term()
+	bool wait_term(long sec=0, long nsec=1000*1000*100)
 	{
+		timeout.tv_sec = sec;
+		timeout.tv_nsec = nsec;
 		int sig = sigtimedwait(&set, 0, &timeout);
 		return sig!=-1;
 	}
-	void siginit()
+	bool short_wait_term()
+	{
+		return wait_term(0, 1000*1000);
+	}
+	bool siginit()
 	{
 		sigemptyset(&set);
 		sigaddset(&set, SIGINT);
 		sigaddset(&set, SIGTERM);
 		sigaddset(&set, SIGHUP);
-		assert(sigprocmask(SIG_BLOCK, &set, 0)==0);
-		timeout.tv_sec = 0;
-		timeout.tv_nsec = 1000*1000*100;
+		int ret = sigprocmask(SIG_BLOCK, &set, 0);
+		if (ret)
+		{
+			perror("");
+			return false;
+		}
+		return true;
 	}
 }
 
@@ -29,6 +39,8 @@ void check_thread_proc()
 	bool need_announce = true;
 	for (;;)
 	{
+		if (short_wait_term())
+			return;
 		if (check_new_check_compiles())
 		{
 			need_announce = true;
@@ -38,6 +50,8 @@ void check_thread_proc()
 				compile_checker(sid);
 			}
 		}
+		if (short_wait_term())
+			return;
 		if (!check_new_submits())
 		{
 			if (need_announce) {
@@ -60,6 +74,8 @@ void check_thread_proc()
 			}
 			continue;
 		}
+		if (short_wait_term())
+			return;
 		need_announce = true;
 		string sid = capture_new_submit();
 		if (sid != "")
@@ -76,11 +92,9 @@ void check_thread_proc()
 
 int main(int argc, char **argv)
 {
-	siginit();
+	if (!siginit())
+		return 2;
 	printf("BACS2 Server version %s\n", VERSION);
-	//	string ts = "/usr/bin/c++";
-	//char *arg_list [] = { "c++", "-x", "c++", "/home/zhent/bacs/b2/Temp/a.tmp", "-o/home/zhent/bacs/b2/Temp/a.tmp.o" };
-	//	execv(ts.c_str(), arg_list);
 
 	chdir(dir_from_filename(argv[0]));
 
