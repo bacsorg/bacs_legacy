@@ -44,6 +44,13 @@ void wake_check_thread();
 bool init_config();
 bool test_submit(cstr sid);
 string status_to_str(int status);
+string lang_str(cstr key, cstr lang, cstr src);
+
+int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cmd, string &error_log);
+
+bool tests_sort_func(cstr f1, cstr f2);
+
+bool check_iofile_name(cstr fn);
 
 bool check_new_check_compiles();
 string capture_new_checker_compilation();
