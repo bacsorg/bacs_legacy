@@ -37,4 +37,6 @@ string name_from_filename(cstr fn);
 bool delete_file(cstr filename);
 void chdir(cstr dir);
 
+bool success_ret(const char *file, int line, int ret);
+
 #endif

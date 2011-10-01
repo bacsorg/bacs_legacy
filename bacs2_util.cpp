@@ -1,4 +1,7 @@
 #include "bacs2_util.h"
+#include "bacs2_log.h"
+
+#include <cstring>
 
 static const int MAX_BIG_BUF = 1<<16 + 1;
 static char big_buf[MAX_BIG_BUF];
@@ -215,3 +218,15 @@ void chdir(cstr dir)
 {
 	chdir(dir.c_str());
 }
+
+bool success_ret(const char *file, int line, int ret)
+{
+	if (ret)
+	{
+		log.add_error(file, line, strerror(ret));
+		return false;
+	}
+	else
+		return true;
+}
+

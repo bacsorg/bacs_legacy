@@ -112,10 +112,10 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 		}
 		//now we must hardlink testfile to input_fn
 		int ret = link(file_in.c_str(), full_input_fn.c_str());
-		if (ret)
+		if (!success_ret(__FILE__, __LINE__, ret))
 			return RUN_FAILED;
 		ret = chmod(full_input_fn.c_str(), 0664);
-		if (ret)
+		if (!success_ret(__FILE__, __LINE__, ret))
 			return RUN_FAILED;
 		in_fn = tf_in.name();
 	}
@@ -134,7 +134,7 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 		FILE *f = fopen(full_output_fn.c_str(), "wb");
 		fclose(f);
 		int ret = chmod(full_output_fn.c_str(), 0662);
-		if (ret)
+		if (!success_ret(__FILE__, __LINE__, ret))
 			return RUN_FAILED;
 	}
 	//preparing done, lets run
@@ -147,7 +147,7 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 		if (file_exists(full_output_fn))
 		{
 			int ret = rename(full_output_fn.c_str(), file_out.c_str());
-			if (ret)
+			if (!success_ret(__FILE__, __LINE__, ret))
 				return RUN_FAILED;
 		}
 		else
@@ -161,7 +161,7 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 	{
 		tf_in.erase();
 		int ret = unlink(full_input_fn.c_str());
-		if (ret)
+		if (!success_ret(__FILE__, __LINE__, ret))
 			return RUN_FAILED;
 	}
 	return result;
