@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+CFLAGS="-O3 -static"
+CXXFLAGS="${CFLAGS}"
+
 sources="$(dirname "$0")"
 
 if [[ ${sources:0:1} != / ]]
@@ -31,7 +34,12 @@ do
 		mkdir Test Temp
 		cat >test_c++ <<EOF
 #!/bin/sh
-exec "\$@"
+name="\$(basename "\$1")"
+if [ '!' -e "Test/\$name" ]
+then
+	ln "Temp/\$name" "Test/\$name"
+fi
+exec sudo chroot "Test" "/\$name"
 
 EOF
 		chmod +x test_c++
@@ -82,34 +90,44 @@ log_file=$dst/bacs2.log
 
 (+)
 name=C++ (gnu)
-compile=$(which c++) -O3 -x c++ {src} -o{src}.o
+dir=$dst
+compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
+clean=$dst/clean {dir}/Test/
 
 (G)
 name=GNU C++ (same)
-compile=$(which c++) -O3 -x c++ {src} -o{src}.o
+dir=$dst
+compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
+clean=$dst/clean {dir}/Test/
 
 (1)
 name=C++ 11
-compile=$(which c++) -std=c++0x -O3 -x c++ {src} -o{src}.o
+dir=$dst
+compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
+clean=$dst/clean {dir}/Test/
 
 (C)
 name=C
-compile=$(which c++) -O3 -x c {src} -o{src}.o
+dir=$dst
+compile=$(which c++) ${CXXFLAGS} -O3 -x c {src} -o{src}.o
 exefile={src}.o
 run=$dst/test_c++ {src}.o
+clean=$dst/clean {dir}/Test/
 
 (P)
 name=Pascal
-compile=$(which fpc) -O2 -Mdelphi {src} -o{src}.exe
+dir=$dst
+compile=$(which fpc) -Xt -O2 -Mdelphi {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
 run=$dst/test_c++ {src}.exe
+clean=$dst/clean {dir}/Test/
 
 (J)
 name=Java
@@ -118,7 +136,7 @@ compile={dir}/java_compile {src} Main.java
 exefile={src}.dir/Main.class
 no_memory_limit=1
 run=$(which java) -Xmx128m -Xss128m -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
-clean={dir}/java_clean {src}
+clean=$dst/clean {src}.dir {dir}/Test/
 
 ;(C)
 ;name=C

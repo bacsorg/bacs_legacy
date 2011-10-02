@@ -6,9 +6,6 @@
 #include <unistd.h>
 #include <ftw.h>
 
-#define MAX_SIZE 1024
-#define BUF_SIZE (MAX_SIZE+300)
-
 int rm_funct(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
 {
 	int ret;
@@ -34,25 +31,32 @@ int rm_funct(const char *fpath, const struct stat *sb, int typeflag, struct FTW 
 
 int main(int argc, char **argv)
 {
-	if (argc!=2)
+	int res = 0, i;
+	if (argc<2)
 	{
-		fprintf(stderr, "Error: Argc(%d) != 2, run 'java_clean JAVA_FILE'\n", argc);
+		fprintf(stderr, "Error: Argc(%d) != 2, run 'clean [dirs...]'\n", argc);
 		return 1;
 	}
-	assert(strlen(argv[1])<MAX_SIZE);
-	char dir[BUF_SIZE];
-	sprintf(dir, "%s.dir", argv[1]);
-
-	int ret = nftw(dir, rm_funct, 30, FTW_DEPTH|FTW_ACTIONRETVAL);
-	if (ret==FTW_STOP)
+	for (i = 1; i<argc; ++i)
 	{
-		return 2;
+		int ret = nftw(argv[i], rm_funct, 30, FTW_DEPTH|FTW_ACTIONRETVAL);
+		int len = strlen(argv[i]);
+		if (len && argv[i][len-1]=='/')
+			if (mkdir(argv[i], 0755))
+			{
+				perror(argv[i]);
+				res |= 4;
+			}
+		if (ret==FTW_STOP)
+		{
+			res |= 2;
+		}
+		else if (ret)
+		{
+			perror(argv[i]);
+			res |= 1;
+		}
 	}
-	else
-	{
-		perror(dir);
-		return 1;
-	}
-	return 0;
+	return res;
 }
 
