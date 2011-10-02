@@ -177,6 +177,7 @@ clean=$dst/clean {src}.dir {dir}/Test/
 ;run={src}.exe
 
 EOF
+	cd ..
 	fi
 done
 
