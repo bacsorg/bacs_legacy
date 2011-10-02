@@ -1,5 +1,6 @@
 #include "bacs2.h"
 
+#include <clocale>
 #include <csignal>
 #include <cassert>
 
@@ -90,10 +91,17 @@ void check_thread_proc()
 	return;
 }
 
+void init_env()
+{
+	setlocale(LC_ALL, "C");
+	setenv("LANG", "C", 1);
+}
+
 int main(int argc, char **argv)
 {
 	if (!siginit())
 		return 2;
+	init_env();
 	printf("BACS2 Server version %s\n", VERSION);
 
 	chdir(dir_from_filename(argv[0]));
