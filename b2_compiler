@@ -63,7 +63,7 @@ then
 			*.cpp) compile "$1" "$i" g++ "$i" -O2 -ocheck_new -I"$TESTLIB_CPP" && break ;;
 			*.c) compile "$1" "$i" gcc "$i" -O2 -ocheck_new && break ;;
 			*.dpr) true ;&
-			*.pas) compile "$1" "$i" fpc -O2 -Fu"$TESTLIB_PAS" -I"$TESTLIB_PAS" -FU"$tmpdir" -Mdelphi "$i" -ocheck_new && break ;;
+			*.pas) compile "$1" "$i" fpc -O2 -Cs268435456 -Fu"$TESTLIB_PAS" -I"$TESTLIB_PAS" -FU"$tmpdir" -Mdelphi "$i" -ocheck_new && break ;;
 			*.exe) ;;
 			*.old) ;;
 			'*.*') ;;

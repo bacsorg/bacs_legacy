@@ -34,12 +34,7 @@ do
 		mkdir Test Temp
 		cat >test_c++ <<EOF
 #!/bin/sh
-name="\$(basename "\$1")"
-if [ '!' -e "Test/\$name" ]
-then
-	ln "Temp/\$name" "Test/\$name"
-fi
-exec sudo chroot "Test" "/\$name"
+exec "\$@"
 
 EOF
 		chmod +x test_c++
@@ -123,7 +118,7 @@ clean=$dst/clean {dir}/Test/
 (P)
 name=Pascal
 dir=$dst
-compile=$(which fpc) -Xt -O2 -Mdelphi {src} -o{src}.exe
+compile=$(which fpc) -Cs268435456 -Xt -O2 -Mdelphi {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
 run=$dst/test_c++ {src}.exe
