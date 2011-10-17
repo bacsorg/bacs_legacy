@@ -32,12 +32,6 @@ do
 		cmake "$sources"
 		make
 		mkdir Test Temp
-		cat >test_c++ <<EOF
-#!/bin/sh
-exec "\$@"
-
-EOF
-		chmod +x test_c++
 		cat >java.policy <<EOF
 grant {
 };
@@ -88,7 +82,7 @@ name=C++ (gnu)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$dst/test_c++ {src}.o
+run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
 (G)
@@ -96,7 +90,7 @@ name=GNU C++ (same)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$dst/test_c++ {src}.o
+run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
 (1)
@@ -104,7 +98,7 @@ name=C++ 11
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$dst/test_c++ {src}.o
+run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
 (C)
@@ -112,16 +106,16 @@ name=C
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -O3 -x c {src} -o{src}.o
 exefile={src}.o
-run=$dst/test_c++ {src}.o
+run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
 (P)
 name=Pascal
 dir=$dst
-compile=$(which fpc) -Cs268435456 -Xt -O2 -Mdelphi {src} -o{src}.exe
+compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
-run=$dst/test_c++ {src}.exe
+run=$sources/test_tomoyo {src}.exe
 clean=$dst/clean {dir}/Test/
 
 (J)
