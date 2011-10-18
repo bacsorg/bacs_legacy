@@ -129,21 +129,12 @@ const char* latestFeatures[] = {
 #define SPACE ((char)' ')
 #define EOFC ((char)26)
 
-#ifndef EJUDGE
 #define OK_EXIT_CODE 0
-#define WA_EXIT_CODE 1
-#define PE_EXIT_CODE 2
-#define FAIL_EXIT_CODE 3
-#define DIRT_EXIT_CODE 4
-#define PC_BASE_EXIT_CODE 0
-#else
-#define OK_EXIT_CODE 0
-#define WA_EXIT_CODE 5
+#define WA_EXIT_CODE 2
 #define PE_EXIT_CODE 4
 #define FAIL_EXIT_CODE 6
 #define DIRT_EXIT_CODE 6
 #define PC_BASE_EXIT_CODE 0
-#endif
 
 #define __TESTLIB_STATIC_ASSERT(condition) typedef void* __testlib_static_assert_type[((condition) != 0) * 2 - 1];
 
