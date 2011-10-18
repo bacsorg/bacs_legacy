@@ -220,7 +220,7 @@ int main(int argn, char ** args)
 		}
 		if (time_limit)
 		{
-			lim.rlim_cur = lim.rlim_max = (time_limit + 999) / 1000;
+			lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
 			setrlimit(RLIMIT_CPU, &lim);
 		}
 
