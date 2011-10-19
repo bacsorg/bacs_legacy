@@ -6,6 +6,18 @@
 
 namespace
 {
+	enum ping_type
+	{
+		waiting=0,
+		running=1,
+		completed=2,
+		userterm=3,
+		error=4
+	};
+	void ping(ping_type type, const std::string &submit_id=std::string())
+	{
+		system(format("curl --silent --output /dev/null '%s?type=%d&submit_id=%s'", cf_ping_uri.c_str(), type, submit_id.c_str()).c_str());
+	}
 	sigset_t set;
 	timespec timeout;
 	bool wait_term(long sec=0, long nsec=1000*1000*100)
@@ -13,6 +25,8 @@ namespace
 		timeout.tv_sec = sec;
 		timeout.tv_nsec = nsec;
 		int sig = sigtimedwait(&set, 0, &timeout);
+		if (sig!=-1)
+			ping(userterm);
 		return sig!=-1;
 	}
 	bool short_wait_term()
@@ -32,18 +46,6 @@ namespace
 			return false;
 		}
 		return true;
-	}
-	enum ping_type
-	{
-		waiting=0,
-		running=1,
-		completed=2,
-		userterm=3,
-		error=4
-	};
-	void ping(ping_type type, const std::string &submit_id=std::string())
-	{
-		system(format("curl --silent --output /dev/null %s?type=%d&submit_id=%s", cf_ping_uri.c_str(), type, submit_id.c_str()).c_str());
 	}
 }
 
@@ -91,10 +93,7 @@ void check_thread_proc()
 			continue;
 		}
 		if (short_wait_term())
-		{
-			ping(userterm);
 			return;
-		}
 		need_announce = true;
 		string sid = capture_new_submit();
 		if (sid != "")
