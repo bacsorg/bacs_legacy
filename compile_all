@@ -1,0 +1,11 @@
+#!/bin/sh
+
+compiler="$(readlink -f "$(dirname "$0")/b2_compiler")"
+archive="$(readlink -f "${1:?you have to set archive directory}")"
+
+cd "$archive"
+for i in *
+do
+	"$compiler" "$archive/$i"
+done
+
