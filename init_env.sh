@@ -50,7 +50,7 @@ max_run_out_size=64000000
 max_run_idle_time=10000
 
 ping_period=10
-ping_uri=http://192.168.31.61/~lex/index.php
+ping_uri=http://newweb.bacs.cs.istu.ru/Handler.ashx
 
 reverse_order=1
 
