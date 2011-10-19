@@ -23,6 +23,8 @@ extern int cf_compiler_timeout;
 extern int cf_compiler_memoryout;
 extern int cf_job_query_period;
 extern int cf_max_idle_time;
+extern int cf_ping_period;
+extern string cf_ping_uri;
 
 extern string nstr;
 extern string tests_for_check;

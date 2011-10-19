@@ -89,5 +89,9 @@ void CLogEngine::close()
 
 void CLogEngine::add_working_notify()
 {
-	if (is_init && is_cout) printf(".");
+	if (is_init && is_cout)
+	{
+		printf(".");
+		fflush(stdout);
+	}
 }

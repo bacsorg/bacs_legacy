@@ -33,6 +33,18 @@ namespace
 		}
 		return true;
 	}
+	enum ping_type
+	{
+		waiting=0,
+		running=1,
+		completed=2,
+		userterm=3,
+		error=4
+	};
+	void ping(ping_type type, const std::string &submit_id=std::string())
+	{
+		system(format("curl --silent --output /dev/null %s?type=%d&submit_id=%s", cf_ping_uri.c_str(), type, submit_id.c_str()).c_str());
+	}
 }
 
 void check_thread_proc()
@@ -65,8 +77,11 @@ void check_thread_proc()
 			clock_gettime(CLOCK_MONOTONIC, &cur);
 			end.tv_nsec = (cur.tv_nsec+(cf_submits_delay%1000)*1000000)%(1000*1000*1000);
 			end.tv_sec = cur.tv_sec+cf_submits_delay/1000+end.tv_nsec/(1000*1000*1000);
-			for (;;)
+			size_t counter = 0;
+			for (;; counter = (counter+1)%1000)
 			{
+				if (counter%cf_ping_period==0)
+					ping(waiting);
 				if (wait_term())
 					return;
 				clock_gettime(CLOCK_MONOTONIC, &cur);
@@ -76,16 +91,22 @@ void check_thread_proc()
 			continue;
 		}
 		if (short_wait_term())
+		{
+			ping(userterm);
 			return;
+		}
 		need_announce = true;
 		string sid = capture_new_submit();
 		if (sid != "")
 		{
+			ping(running, sid);
 			if (!test_submit(sid))
 			{
+				ping(error, sid);
 				log.add_error(__FILE__, __LINE__, "Terminating check thread due to fatal error!");
 				return;
 			}
+			ping(completed, sid);
 		}
 	}
 	return;

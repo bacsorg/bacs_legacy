@@ -49,6 +49,11 @@ max_info_size=50000
 max_run_out_size=64000000
 max_run_idle_time=10000
 
+ping_period=10
+ping_uri=http://192.168.31.61/~lex/index.php
+
+reverse_order=1
+
 default_time_limit=10
 default_memory_limit=128
 

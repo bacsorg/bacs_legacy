@@ -7,6 +7,11 @@ int cf_compiler_memoryout;
 int cf_job_query_period = JOB_QUERY_PERIOD;
 int cf_max_idle_time;
 
+int cf_ping_period;
+string cf_ping_uri;
+
+int cf_reverse_order;
+
 string nstr;
 string tests_for_check;
 
@@ -34,7 +39,7 @@ string capture_new_submit()
 	}
 	else
 	{
-		sid = db_qres0(format("select submit_id from submit where result = %d limit 1", ST_PENDING));
+		sid = db_qres0(format("select submit_id from submit where result = %d order by submit_id %s limit 1", ST_PENDING, cf_reverse_order?"desc":"asc"));
 	}
 	if (sid != "")
 		db_query(format("update submit set result = %d where submit_id = %s", ST_RUNNING, sid.c_str()));
@@ -92,6 +97,9 @@ bool init_config()
 	cf_compiler_memoryout = cfgi("general.compiler_memoryout");
 	cf_checker_timeout = cfgi("general.checker_timeout");
 	cf_max_idle_time = cfgi("general.max_run_idle_time");
+	cf_ping_period = cfgi("general.ping_period");
+	cf_ping_uri = cfg("general.ping_uri");
+	cf_reverse_order = cfgi("general.reverse_order");
 	return true;
 }
 
