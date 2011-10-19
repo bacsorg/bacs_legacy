@@ -110,9 +110,8 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
 			log.add_error(__FILE__, __LINE__, "Error: cannot create input temp file!");
 			return RUN_FAILED;
 		}
-		//now we must hardlink testfile to input_fn
-		int ret = link(file_in.c_str(), full_input_fn.c_str());
-		if (!success_ret(__FILE__, __LINE__, ret))
+		int ret = system(format("cp -f %s %s", file_in.c_str(), full_input_fn.c_str()).c_str());
+		if (!WIFEXITED(ret) || WEXITSTATUS(ret)!=0)
 			return RUN_FAILED;
 		ret = chmod(full_input_fn.c_str(), 0664);
 		if (!success_ret(__FILE__, __LINE__, ret))
