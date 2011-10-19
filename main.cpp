@@ -49,16 +49,38 @@ namespace
 	}
 }
 
+bool wait_cycle()
+{
+	timespec cur, end;
+	clock_gettime(CLOCK_MONOTONIC, &cur);
+	end.tv_nsec = (cur.tv_nsec+(cf_submits_delay%1000)*1000000)%(1000*1000*1000);
+	end.tv_sec = cur.tv_sec+cf_submits_delay/1000+end.tv_nsec/(1000*1000*1000);
+	size_t counter = 0;
+	for (;; counter = (counter+1)%1000)
+	{
+		if (counter%cf_ping_period==0)
+			ping(waiting);
+		if (wait_term())
+			return true;
+		clock_gettime(CLOCK_MONOTONIC, &cur);
+		if (cur.tv_sec>end.tv_sec || (cur.tv_sec==end.tv_sec && cur.tv_nsec>end.tv_nsec))
+			break;
+	}
+	return false;
+}
+
 void check_thread_proc()
 {
 	bool need_announce = true;
 	for (;;)
 	{
+		bool found = false;
 		if (short_wait_term())
 			return;
-		if (check_new_check_compiles())
+		if (cf_compile_checkers && check_new_check_compiles())
 		{
 			need_announce = true;
+			found = true;
 			string sid = capture_new_checker_compilation();
 			if (sid != "")
 			{
@@ -67,46 +89,33 @@ void check_thread_proc()
 		}
 		if (short_wait_term())
 			return;
-		if (!check_new_submits())
+		if (cf_check_solutions && check_new_submits())
 		{
-			if (need_announce) {
-				log.add("Waiting for new submissions...");
-				need_announce = false;
-			}
-			else
-				log.add_working_notify();
-			timespec cur, end;
-			clock_gettime(CLOCK_MONOTONIC, &cur);
-			end.tv_nsec = (cur.tv_nsec+(cf_submits_delay%1000)*1000000)%(1000*1000*1000);
-			end.tv_sec = cur.tv_sec+cf_submits_delay/1000+end.tv_nsec/(1000*1000*1000);
-			size_t counter = 0;
-			for (;; counter = (counter+1)%1000)
+			need_announce = true;
+			found = true;
+			string sid = capture_new_submit();
+			if (sid != "")
 			{
-				if (counter%cf_ping_period==0)
-					ping(waiting);
-				if (wait_term())
+				ping(running, sid);
+				if (!test_submit(sid))
+				{
+					ping(error, sid);
+					log.add_error(__FILE__, __LINE__, "Terminating check thread due to fatal error!");
 					return;
-				clock_gettime(CLOCK_MONOTONIC, &cur);
-				if (cur.tv_sec>end.tv_sec || (cur.tv_sec==end.tv_sec && cur.tv_nsec>end.tv_nsec))
-					break;
+				}
+				ping(completed, sid);
 			}
-			continue;
 		}
-		if (short_wait_term())
-			return;
-		need_announce = true;
-		string sid = capture_new_submit();
-		if (sid != "")
+		if (need_announce)
 		{
-			ping(running, sid);
-			if (!test_submit(sid))
-			{
-				ping(error, sid);
-				log.add_error(__FILE__, __LINE__, "Terminating check thread due to fatal error!");
-				return;
-			}
-			ping(completed, sid);
+			log.add("Waiting for new events...");
+			need_announce = false;
 		}
+		else
+			log.add_working_notify();
+		if (!found)
+			if (wait_cycle())
+				return;
 	}
 	return;
 }

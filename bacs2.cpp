@@ -11,6 +11,8 @@ int cf_ping_period;
 string cf_ping_uri;
 
 int cf_reverse_order;
+int cf_compile_checkers;
+int cf_check_solutions;
 
 string nstr;
 string tests_for_check;
@@ -100,6 +102,8 @@ bool init_config()
 	cf_ping_period = cfgi("general.ping_period");
 	cf_ping_uri = cfg("general.ping_uri");
 	cf_reverse_order = cfgi("general.reverse_order");
+	cf_compile_checkers = cfgi("general.compile_checkers");
+	cf_check_solutions = cfgi("general.check_solutions");
 	return true;
 }
 

@@ -11,6 +11,10 @@ then
 	sources="$PWD/$sources"
 fi
 
+# default config
+cf_compile_checkers=1
+cf_check_solutions=1
+# end of default config
 
 config="${1?You have to specify config file}"
 . "$config"
@@ -53,6 +57,9 @@ ping_period=10
 ping_uri=http://newweb.bacs.cs.istu.ru/Handler.ashx
 
 reverse_order=1
+
+compile_checkers=$cf_compile_checkers
+check_solutions=$cf_check_solutions
 
 default_time_limit=10
 default_memory_limit=128
