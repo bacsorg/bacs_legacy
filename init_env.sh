@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-CFLAGS="-O3 -static"
+CFLAGS="-O3"
 CXXFLAGS="${CFLAGS}"
 
 sources="$(dirname "$0")"
@@ -116,7 +116,7 @@ clean=$dst/clean {dir}/Test/
 (C)
 name=C
 dir=$dst
-compile=$(which c++) ${CXXFLAGS} -O3 -x c {src} -o{src}.o
+compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
 exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
