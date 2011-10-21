@@ -6,18 +6,6 @@
 
 namespace
 {
-	enum ping_type
-	{
-		waiting=0,
-		running=1,
-		completed=2,
-		userterm=3,
-		error=4
-	};
-	void ping(ping_type type, const std::string &submit_id=std::string())
-	{
-		system(format("curl --silent --output /dev/null '%s?type=%d&submit_id=%s'", cf_ping_uri.c_str(), type, submit_id.c_str()).c_str());
-	}
 	sigset_t set;
 	timespec timeout;
 	bool wait_term(long sec=0, long nsec=1000*1000*100)

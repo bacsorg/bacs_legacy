@@ -41,6 +41,7 @@ bool CSubmit::compile_and_test()
 	}
 	cleanup();
 	store_result();
+	ping(submit_result, sid, -1, pid, status_to_str(status));
 
 	log.add(format("Finished testing [%s]", sid.c_str()),
 		log.gen_data("Result", status_to_str(status),

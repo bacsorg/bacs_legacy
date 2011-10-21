@@ -29,6 +29,7 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
 	test_results.clear();
 	for (i = 0; i < (int)test.size(); ++i)
 	{
+		ping(running, "", i, id);
 		double time_used, memory_used;
 		if (acm)
 		{

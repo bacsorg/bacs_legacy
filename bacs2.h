@@ -126,4 +126,27 @@ extern bool is_thread_running;
 
 extern int cf_submits_delay;
 
+enum ping_type
+{
+	waiting=0,
+	running=1,
+	submit_result=5,
+	completed=2,
+	userterm=3,
+	error=4
+};
+
+inline void ping(ping_type type, const std::string &submit_id=std::string(), int test=-1, const std::string &problem_id=std::string(), std::string result=std::string())
+{
+	str_replace(result, " ", "_");
+	system(format("curl --silent --output /dev/null '%s?type=%d&submit_id=%s&test=%d&problem_id=%s&result=%s'",
+		cf_ping_uri.c_str(),
+		type,
+		submit_id.c_str(),
+		test,
+		problem_id.c_str(),
+		result.c_str()
+	).c_str());
+}
+
 #endif

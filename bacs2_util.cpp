@@ -49,6 +49,7 @@ string format(const char *q, ...)
 string vformat(const char *q, va_list args)
 {
 	vsnprintf(big_buf, MAX_BIG_BUF, q, args);//TODO will not write more than MAX_BIG_BUF
+	big_buf[MAX_BIG_BUF-1] = '\0';
 	string res = big_buf;
 	return res;
 }
