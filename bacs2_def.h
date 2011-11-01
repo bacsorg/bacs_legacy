@@ -24,6 +24,7 @@ typedef const string & cstr;
 #define ST_PRESENTATION_ERROR 7
 #define ST_SECURITY_VIOLATION 8
 #define ST_INVALID_PROBLEM 9
+#define ST_REALTIME_LIMIT 10
 #define ST_PENDING 100
 #define ST_RUNNING 101
 
@@ -38,6 +39,7 @@ typedef const string & cstr;
 #define RUN_TIMEOUT 2
 #define RUN_OUT_OF_MEMORY 3
 #define RUN_ABNORMAL_EXIT 4
+#define RUN_REALTIMEOUT 5
 
 #define CHECK_RES_OK 0
 #define CHECK_RES_WA 5

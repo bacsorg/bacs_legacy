@@ -14,6 +14,7 @@ string status_to_str(int status)
 	case ST_PRESENTATION_ERROR: return "Presentation error";
 	case ST_SECURITY_VIOLATION: return "Security violation";
 	case ST_INVALID_PROBLEM: return "Invalid problem id";
+	case ST_REALTIME_LIMIT: return "Real time limit exceeded";
 	case ST_PENDING: return "Pending check";
 	case ST_RUNNING: return "Running";
 	default: return "Unknown";

@@ -197,6 +197,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 		}
 		else if (res == RUN_TIMEOUT) result = ST_TIME_LIMIT;
 		else if (res == RUN_OUT_OF_MEMORY) result = ST_MEMORY_LIMIT;
+		else if (res == RUN_REALTIMEOUT) result = ST_REALTIME_LIMIT;
 		else if (res == RUN_ABNORMAL_EXIT || (res == RUN_OK && ex != 0)) {
 			result = ST_RUNTIME_ERROR;
 		}
