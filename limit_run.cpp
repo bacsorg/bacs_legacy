@@ -23,8 +23,9 @@ using namespace std;
 #define RUN_TIMEOUT 2
 #define RUN_OUT_OF_MEMORY 3
 #define RUN_ABNORMAL_EXIT 4
+#define RUN_REALTIMEOUT 5
 #define RESULT_FILE_NAME "lim_run_results.txt"
-#define MAX_IDLE_TIME 10000
+#define MAX_TIME (60*10)
 #define ADD_TO_CHECK 8000000
 
 int result = -1;
@@ -115,7 +116,8 @@ int main(int argn, char ** args)
     	int step = 200;
    		nano_ts.tv_nsec = step * 1000000;
 		nano_ts.tv_sec = 0;
-		int st = clock();
+		timespec st;
+		clock_gettime(CLOCK_MONOTONIC, &st);
 		while (1)
 		{
 			if (waitpid(nid, &status, WNOHANG))
@@ -131,13 +133,13 @@ int main(int argn, char ** args)
 				time_used = lim.ru_utime.tv_sec * 1000 + lim.ru_utime.tv_usec / 1000;
 			}
 
-			waited = clock() - st;
+			timespec current_time;
+			clock_gettime(CLOCK_MONOTONIC, &current_time);
 
-			if (waited - time_used >= MAX_IDLE_TIME && time_limit != 0)
+			if (current_time.tv_sec >= st.tv_sec+MAX_TIME && time_limit != 0)
 			{
 				kill(nid, 9);
-				//bft in same sittuation returns RUN_TIME
-				result = RUN_ABNORMAL_EXIT;
+				result = RUN_REALTIMEOUT;
 				exit_code = 0;
 				writeResults();
 				return 0;

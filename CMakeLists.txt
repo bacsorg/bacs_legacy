@@ -20,6 +20,7 @@ target_link_libraries(${PROJECT_NAME} mysqlclient rt)
 
 add_executable(checkdef checkdef.cpp)
 add_executable(limit_run limit_run.cpp)
+target_link_libraries(limit_run rt)
 add_executable(java_compile java_compile.c)
 add_executable(clean clean.c)
 
