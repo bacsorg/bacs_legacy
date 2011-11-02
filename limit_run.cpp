@@ -27,7 +27,6 @@ using namespace std;
 #define RUN_ABNORMAL_EXIT 4
 #define RUN_REALTIMEOUT 5
 #define RESULT_FILE_NAME "lim_run_results.txt"
-#define MAX_TIME (60*10)
 #define ADD_TO_CHECK 8000000
 
 int result = -1;
@@ -140,9 +139,8 @@ int main(int argn, char ** args)
 
 		rusage lim;
 		int status = 0;
-    	timespec nano_ts;
-    	int waited = 0;
-    	int step = 200;
+    		timespec nano_ts;
+    		int step = 200;
    		nano_ts.tv_nsec = step * 1000000;
 		nano_ts.tv_sec = 0;
 		timespec st;
@@ -165,7 +163,7 @@ int main(int argn, char ** args)
 			timespec current_time;
 			clock_gettime(CLOCK_MONOTONIC, &current_time);
 
-			if (current_time.tv_sec >= st.tv_sec+MAX_TIME && time_limit != 0)
+			if (current_time.tv_sec >= st.tv_sec+max(time_limit/100, 30) && time_limit != 0)
 			{
 				kill(nid, 9);
 				result = RUN_REALTIMEOUT;
@@ -265,3 +263,4 @@ int main(int argn, char ** args)
 
 	return 0;
 }
+
