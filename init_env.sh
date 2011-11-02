@@ -27,7 +27,7 @@ do
 	then
 		dst="$PWD/$dst"
 	fi
-	if [ -e "$dst" ]
+	if false #[ -e "$dst" ]
 	then
 		echo "Remove \"$dst\" if you want to init environment in it" >&2
 	else
@@ -35,7 +35,7 @@ do
 		cd "$dst"
 		cmake "$sources"
 		make
-		mkdir Test Temp
+		mkdir -p Test Temp
 		cat >java.policy <<EOF
 grant {
 };
@@ -135,8 +135,8 @@ name=Java
 dir=$dst
 compile={dir}/java_compile {src} Main.java
 exefile={src}.dir/Main.class
-no_memory_limit=1
-run=$(which java) -Xmx128m -Xss128m -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
+;no_memory_limit=1
+run=$(which java) -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean=$dst/clean {src}.dir {dir}/Test/
 
 ;(C)

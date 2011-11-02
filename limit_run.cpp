@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 #include <string>
+#include <deque>
+#include <sstream>
 #include <vector>
 #include <unistd.h>
 #include <time.h>
@@ -99,7 +101,34 @@ int main(int argn, char ** args)
 
 	in_fn = args[1];
 	out_fn = args[2];
-
+	// argv
+	char *executable = args[6];
+	deque<string> argv_;
+	for (size_t i = 7; args[i]; ++i)
+		argv_.push_back(args[i]);
+	char **argv = args+6;
+	if (name_from_filename(executable)=="java")
+	{
+		{
+			stringstream buf;
+			buf<<"-Xss"<<memory_limit;
+			argv_.push_front(buf.str());
+		}
+		{
+			stringstream buf;
+			buf<<"-Xmx"<<memory_limit;
+			argv_.push_front(buf.str());
+		}
+		argv_.push_front(executable);
+		argv = new char*[argv_.size()+1];
+		for (size_t i = 0; i<argv_.size(); ++i)
+		{
+			argv[i] = new char[argv_[i].size()+1];
+			strcpy(argv[i], argv_[i].c_str());
+		}
+		argv[argv_.size()] = 0;
+		memory_limit = 0;
+	}
 	int nid = fork();
 	if (nid < 0)
 	{
@@ -225,8 +254,7 @@ int main(int argn, char ** args)
 			lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
 			setrlimit(RLIMIT_CPU, &lim);
 		}
-
-		if (execv(args[6], args + 6))
+		if (execv(executable, argv))
 		{
 			fprintf(stderr, "Error: can't execve\n");
 			return 1;
