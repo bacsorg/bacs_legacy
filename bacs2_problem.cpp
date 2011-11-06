@@ -5,10 +5,14 @@ CProblem::CProblem()
 	fatal_error = false;
 }
 
+#include <boost/filesystem.hpp>
+
 bool CProblem::init(cstr _id)
 {
 	id = _id;
 	string dir = cfg("general.problem_archive_dir") + "/" + id + "/";
+	boost::filesystem::create_directories(dir);
+	repository->extract(cfg("general.repository_prefix")+id, dir);
 	string cf_fn = dir + "conf.txt";
 	if (!cf.init(cf_fn)) return false;
 	time_limit = s2d(cf.get("tl"), cfgd("general.default_time_limit"));

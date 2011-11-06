@@ -19,6 +19,8 @@ string tests_for_check;
 
 string dbg_submit_id = "";
 
+std::auto_ptr<bunsan::pm::compatibility::repository> repository;
+
 bool check_new_submits()
 {
 	//STUB
@@ -88,6 +90,9 @@ void compile_checker(const string &sid)
 	}
 }
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
+
 bool init_config()
 {
 	if (!config.init(CONFIG_FILE_NAME)) {
@@ -104,6 +109,9 @@ bool init_config()
 	cf_reverse_order = cfgi("general.reverse_order");
 	cf_compile_checkers = cfgi("general.compile_checkers");
 	cf_check_solutions = cfgi("general.check_solutions");
+	boost::property_tree::ptree repo_config;
+	boost::property_tree::read_info(cfg("general.bunsan_repository_config"), repo_config);
+	repository.reset(new bunsan::pm::compatibility::repository(repo_config));
 	return true;
 }
 

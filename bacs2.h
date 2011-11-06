@@ -2,8 +2,11 @@
 #define _XOPEN_SOURCE 600
 #define _BACS2_H_
 
+#include "bunsan/pm/compatibility/repository.hpp"
+
 #define _CRT_SECURE_NO_DEPRECATE
 
+#include <memory>
 #include <stdio.h>
 #include <unistd.h>
 #include <algorithm>
@@ -32,6 +35,8 @@ extern string nstr;
 extern string tests_for_check;
 
 extern string dbg_submit_id;
+
+extern std::auto_ptr<bunsan::pm::compatibility::repository> repository;
 
 class CSubmit;
 class CProblem;

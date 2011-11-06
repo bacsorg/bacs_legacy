@@ -56,6 +56,8 @@ max_run_idle_time=10000
 ping_period=10
 ping_uri=http://statistic.bacs.cs.istu.ru/Handler.ashx
 
+bunsan_repository_config=$bunsan_pm_config
+
 reverse_order=1
 
 compile_checkers=$cf_compile_checkers
