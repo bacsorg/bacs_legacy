@@ -57,6 +57,7 @@ ping_period=10
 ping_uri=http://statistic.bacs.cs.istu.ru/Handler.ashx
 
 bunsan_repository_config=$bunsan_pm_config
+repository_prefix=bacs/problem/
 
 reverse_order=1
 

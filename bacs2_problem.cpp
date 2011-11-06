@@ -12,7 +12,15 @@ bool CProblem::init(cstr _id)
 	id = _id;
 	string dir = cfg("general.problem_archive_dir") + "/" + id + "/";
 	boost::filesystem::create_directories(dir);
-	repository->extract(cfg("general.repository_prefix")+id, dir);
+	try
+	{
+		repository->extract(cfg("general.repository_prefix")+id, dir);
+	}
+	catch (std::exception &e)
+	{
+		log.add_error(__FILE__, __LINE__, format("Unable to extract package: %s", e.what()).c_str(), log.gen_data("Problem ID", id));
+		return false;
+	}
 	string cf_fn = dir + "conf.txt";
 	if (!cf.init(cf_fn)) return false;
 	time_limit = s2d(cf.get("tl"), cfgd("general.default_time_limit"));
