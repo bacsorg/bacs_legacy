@@ -31,6 +31,12 @@ bool CProblem::init(cstr _id)
 	return true;
 }
 
+CProblem::~CProblem()
+{
+	string dir = cfg("general.problem_archive_dir") + "/" + id + "/";
+	system(format("rm -rf \"%s\"", dir.c_str()).c_str());
+}
+
 bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm, string& test_results)
 {
 	int i;
