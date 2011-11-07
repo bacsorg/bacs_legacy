@@ -35,7 +35,7 @@ do
 		cd "$dst"
 		cmake "$sources"
 		make
-		mkdir -p Test Temp
+		mkdir -p Test Temp Archive
 		cat >java.policy <<EOF
 grant {
 };
@@ -72,7 +72,7 @@ limit_run_result_file=$dst/lim_run_results.txt
 temp_dir=$dst/Temp
 test_dir=$dst/Test
 b2_compiler=$sources/b2_compiler
-problem_archive_dir=$archive
+problem_archive_dir=$dst/Archive
 default_checker=$dst/checkdef
 
 [DB]
