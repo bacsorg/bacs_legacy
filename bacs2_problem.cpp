@@ -208,7 +208,8 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 	}
 	else
 	{
-		if (res == RUN_FAILED) {
+		if (res == RUN_FAILED)
+		{
 			log.add_error(__FILE__, __LINE__, "Error: cannot run solution!", log.gen_data("Run command", run_cmd));
 			result = ST_SERVER_ERROR;
 			ok = false;
@@ -216,10 +217,10 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
 		else if (res == RUN_TIMEOUT) result = ST_TIME_LIMIT;
 		else if (res == RUN_OUT_OF_MEMORY) result = ST_MEMORY_LIMIT;
 		else if (res == RUN_REALTIMEOUT) result = ST_REALTIME_LIMIT;
-		else if (res == RUN_ABNORMAL_EXIT || (res == RUN_OK && ex != 0)) {
-			result = ST_RUNTIME_ERROR;
-		}
-		else {
+		else if (res == RUN_OUTPUT_LIMIT) result = ST_OUTPUT_LIMIT;
+		else if (res == RUN_ABNORMAL_EXIT || (res == RUN_OK && ex != 0)) result = ST_RUNTIME_ERROR;
+		else
+		{
 			log.add_error(__FILE__, __LINE__, "Error: unexpected run() result!", log.gen_data("Result", i2s(res)));
 			result = ST_SERVER_ERROR;
 			ok = false;

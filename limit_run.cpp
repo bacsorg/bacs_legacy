@@ -26,8 +26,10 @@ using namespace std;
 #define RUN_OUT_OF_MEMORY 3
 #define RUN_ABNORMAL_EXIT 4
 #define RUN_REALTIMEOUT 5
+#define RUN_OUTPUT_LIMIT 6
 #define RESULT_FILE_NAME "lim_run_results.txt"
 #define ADD_TO_CHECK 8000000
+#define OUTPUT_LIMIT (256*1024*1024) // 256 MiB
 
 int result = -1;
 int exit_code = -1;
@@ -206,6 +208,10 @@ int main(int argn, char ** args)
 			{
 				result = RUN_TIMEOUT;
 			}
+			else if (term_code == SIGXFSZ)
+			{
+				result = RUN_OUTPUT_LIMIT;
+			}
 			else
 			{
 				result = RUN_ABNORMAL_EXIT;
@@ -251,6 +257,10 @@ int main(int argn, char ** args)
 		{
 			lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
 			setrlimit(RLIMIT_CPU, &lim);
+		}
+		{
+			lim.rlim_cur = lim.rlim_max = OUTPUT_LIMIT;
+			setrlimit(RLIMIT_FSIZE, &lim);
 		}
 		if (execv(executable, argv))
 		{

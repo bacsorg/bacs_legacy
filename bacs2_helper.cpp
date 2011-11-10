@@ -17,6 +17,7 @@ string status_to_str(int status)
 	case ST_REALTIME_LIMIT: return "Real time limit exceeded";
 	case ST_PENDING: return "Pending check";
 	case ST_RUNNING: return "Running";
+	case ST_OUTPUT_LIMIT: return "Output limit exceeded";
 	default: return "Unknown";
 	}
 }
