@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-exec >>/tmp/b2_compiler_log
-exec 2>>/tmp/b2_compiler_log
-
 ROOT="$(dirname "$0")"
 if [[ ${ROOT:0:1} != / ]]
 then
@@ -29,10 +26,7 @@ compile()
 	shift 2
 	if ! "$@"
 	then
-		echo "$NAME:$FILE" >>/tmp/b2_compiler_error
 		return 1
-	else
-		echo "$NAME:$FILE" >>/tmp/b2_compiler_ok
 	fi
 	case `uname` in
 		Linux) tmp="$(mktemp)" ;;
