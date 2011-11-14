@@ -1,5 +1,12 @@
 #include "bacs2.h"
 
+enum
+{
+	order_ascending,
+	order_descending,
+	order_random
+};
+
 int cf_submits_delay;
 int cf_checker_timeout;
 int cf_compiler_timeout;
@@ -10,7 +17,7 @@ int cf_max_idle_time;
 int cf_ping_period;
 string cf_ping_uri;
 
-int cf_reverse_order;
+int cf_order;
 int cf_compile_checkers;
 int cf_check_solutions;
 
@@ -43,7 +50,13 @@ string capture_new_submit()
 	}
 	else
 	{
-		sid = db_qres0(format("select submit_id from submit where result = %d order by submit_id %s limit 1", ST_PENDING, cf_reverse_order?"desc":"asc"));
+		int ord = cf_order;
+		if (ord==order_random)
+			ord = rand()&1?order_ascending:order_descending;
+		sid = db_qres0(format(
+			"select submit_id from submit where result = %d order by submit_id %s limit 1",
+			ST_PENDING,
+			ord==order_ascending?"asc":"desc"));
 	}
 	if (sid != "")
 		db_query(format("update submit set result = %d where submit_id = %s", ST_RUNNING, sid.c_str()));
@@ -106,7 +119,17 @@ bool init_config()
 	cf_max_idle_time = cfgi("general.max_run_idle_time");
 	cf_ping_period = cfgi("general.ping_period");
 	cf_ping_uri = cfg("general.ping_uri");
-	cf_reverse_order = cfgi("general.reverse_order");
+	{
+		string ord = cfg("general.order");
+		if (ord=="asc")
+			cf_order = order_ascending;
+		else if (ord=="desc")
+			cf_order = order_descending;
+		else if (ord=="rand")
+			cf_order = order_random;
+		else
+			return false;
+	}
 	cf_compile_checkers = cfgi("general.compile_checkers");
 	cf_check_solutions = cfgi("general.check_solutions");
 	boost::property_tree::ptree repo_config;

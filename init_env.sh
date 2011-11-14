@@ -59,7 +59,7 @@ ping_uri=http://statistic.bacs.cs.istu.ru/Handler.ashx
 bunsan_repository_config=$bunsan_pm_config
 repository_prefix=bacs/problem/
 
-reverse_order=1
+order=${cf_order}
 
 compile_checkers=$cf_compile_checkers
 check_solutions=$cf_check_solutions
