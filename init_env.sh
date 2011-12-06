@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-CFLAGS="-O3"
+CFLAGS="-O2 -fno-stack-limit"
 CXXFLAGS="${CFLAGS}"
 
 sources="$(dirname "$0")"
