@@ -125,9 +125,18 @@ run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
 (P)
-name=Pascal
+name=FPC (Delphi mode)
 dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{src}.exe
+tmpfile={src_noext}.o
+exefile={src}.exe
+run=$sources/test_tomoyo {src}.exe
+clean=$dst/clean {dir}/Test/
+
+(F)
+name=FPC (FPC mode)
+dir=$dst
+compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
 run=$sources/test_tomoyo {src}.exe
@@ -141,6 +150,14 @@ exefile={src}.dir/Main.class
 ;no_memory_limit=1
 run=$(which java) -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean=$dst/clean {src}.dir {dir}/Test/
+
+(T)
+name=Python3
+dir=$dst
+compile=$(which cp) -f {src} {src}.py
+exefile={src}.py
+run=$sources/test_tomoyo $(which python3) {src}.py
+clean=$dst/clean {dir}/Test/
 
 ;(C)
 ;name=C
