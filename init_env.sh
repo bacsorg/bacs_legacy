@@ -38,6 +38,7 @@ do
 		mkdir -p Test Temp Archive
 		cat >java.policy <<EOF
 grant {
+	permission java.io.FilePermission "*", "read,write";
 };
 
 EOF
