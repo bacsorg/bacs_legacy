@@ -108,7 +108,7 @@ int main(int argn, char ** args)
 	for (size_t i = 7; args[i]; ++i)
 		argv_.push_back(args[i]);
 	char **argv = args+6;
-	if (name_from_filename(executable)=="java")
+	if (name_from_filename(executable)=="java_run")
 	{
 		{
 			stringstream buf;

@@ -23,4 +23,5 @@ add_executable(limit_run limit_run.cpp)
 target_link_libraries(limit_run rt)
 add_executable(java_compile java_compile.c)
 add_executable(clean clean.c)
+add_executable(java_run java_run.c)
 

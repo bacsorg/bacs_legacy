@@ -149,7 +149,7 @@ dir=$dst
 compile={dir}/java_compile {src} Main.java
 exefile={src}.dir/Main.class
 ;no_memory_limit=1
-run=$(which java) -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
+run=$dst/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean=$dst/clean {src}.dir {dir}/Test/
 
 (T)
