@@ -22,12 +22,12 @@
     Modifications log:
       dd.mm.yyyy  modified by          modification log
       31.10.2005  Alexander Chernov    Adaptation for ejudge.
- 
+
       27.10.2002  Andrew Stankevich    Buffered input (speedup up to 2 times on big files)
                                        BP7.0 compatibility removed
       17.09.2000  Andrew Stankevich    XML correct comments
       01.08.2000  Andrew Stankevich    Messages translated to English
-                                       APPES support added   
+                                       APPES support added
                                        FAIL name changed
       07.02.1998  Roman Elizarov       Correct EOF processing
       12.02.1998  Roman Elizarov       SeekEoln corrected
@@ -40,7 +40,7 @@ unit testlib;
 
 interface
 
-const 
+const
     EOFCHAR  = #$1A;
     EOFREMAP = ' ';
     NUMBERBEFORE = [#10,#13,' ',#09];
@@ -51,15 +51,15 @@ const
 
     BUFFER_SIZE = 1048576;
 
-type 
+type
     Charset = set of char;
     Tmode   = (_INPUT, _OUTPUT, _ANSWER);
     Tresult = (_OK, _WA, _PE,  _FAIL, _DIRT);
-              { 
-                _OK - accepted, 
-                _WA - wrong answer, 
+              {
+                _OK - accepted,
+                _WA - wrong answer,
                 _PE - output format mismatch,
-                _FAIL - when everything fucks up 
+                _FAIL - when everything fucks up
                 _DIRT - for inner using
               }
 
@@ -108,6 +108,8 @@ type
         { = readlongint }
         function readinteger: integer;
 
+	function readint64: int64;
+
         { reads real }
         { _PE if error }
         function readreal: extended;
@@ -125,20 +127,20 @@ type
 function itoa(a:integer):string;
 procedure quit(res: Tresult; msg: string);
 
-var 
+var
     inf, ouf, ans: Instream;
     resultname: string; { result file name }
     appesmode: boolean;
 
 implementation
 
-uses 
+uses
     SysUtils;
 
 const
-    LIGHTGRAY = $07;    
-    LIGHTRED  = $0c;    
-    LIGHTCYAN = $0b;    
+    LIGHTGRAY = $07;
+    LIGHTRED  = $0c;
+    LIGHTCYAN = $0b;
     LIGHTGREEN = $0a;
 
 function itoa(a:integer):string;
@@ -157,7 +159,7 @@ begin
     SetConsoleTextAttribute(h, x);}
 end;
 
-const 
+const
     outcomes: array[Tresult] of string = (
         'accepted',
         'wrong-answer',
@@ -185,7 +187,7 @@ begin
 end;
 
 procedure quit(res: Tresult; msg: string);
-var 
+var
     resfile: text;
     errorname: string;
 
@@ -204,40 +206,40 @@ begin
    end;
 
    case res of
-     _FAIL : 
-   begin 
+     _FAIL :
+   begin
       errorname := 'FAIL ';
       scr(LIGHTRED, errorname);
    end;
 
-     _DIRT : 
+     _DIRT :
    begin
       errorname := 'wrong output format ';
       scr(LIGHTCYAN, errorname);
       res := _PE;
    end;
 
-     _PE   : 
+     _PE   :
    begin
       errorname := 'wrong output format ';
       scr(LIGHTRED, errorname);
    end;
 
-     _OK   : 
+     _OK   :
    begin
       errorname := 'ok ';
       scr(LIGHTGREEN, errorname);
    end;
 
-     _WA   : 
+     _WA   :
    begin
       errorname := 'wrong answer ';
       scr(LIGHTRED, errorname);
    end;
 
-   else    
+   else
       quit(_FAIL, 'What is the code ??? ');
-   end;    
+   end;
 
    if resultname <> '' then
    begin
@@ -264,8 +266,8 @@ begin
 
     if res = _FAIL then HALT(ord(res));
 
-    close(inf.f); 
-    close(ouf.f); 
+    close(inf.f);
+    close(ouf.f);
     close(ans.f);
 
     textcolor(LIGHTGRAY);
@@ -341,7 +343,7 @@ end;
 
 procedure Instream.skipchar;
 begin
-    if buffer[bpos] <> EOFCHAR then 
+    if buffer[bpos] <> EOFCHAR then
     begin
         inc(bpos);
         if bpos = bsize then
@@ -351,9 +353,9 @@ end;
 
 procedure Instream.quit(res: Tresult; msg: string);
 begin
-    if mode = _OUTPUT then 
+    if mode = _OUTPUT then
         testlib.quit(res, msg)
-    else 
+    else
         testlib.quit(_FAIL, msg + ' (' + name + ')');
 end;
 
@@ -372,7 +374,7 @@ begin
 end;
 
 function Instream.readinteger: integer;
-var 
+var
     help: string;
     code: integer;
 begin
@@ -382,14 +384,14 @@ begin
         quit(_PE, 'Unexpected end of file - integer expected');
 
     help := '';
-    while not (buffer[bpos] in NUMBERAFTER) do 
+    while not (buffer[bpos] in NUMBERAFTER) do
         help := help + nextchar;
     val(help, result, code);
     if code <> 0 then quit(_PE, 'Expected integer instead of "' + help + '"');
 end;
 
 function Instream.readlongint: integer;
-var 
+var
     help: string;
     code: integer;
 begin
@@ -399,14 +401,31 @@ begin
         quit(_PE, 'Unexpected end of file - integer expected');
 
     help := '';
-    while not (buffer[bpos] in NUMBERAFTER) do 
+    while not (buffer[bpos] in NUMBERAFTER) do
         help := help + nextchar;
     val(help, result, code);
     if code <> 0 then quit(_PE, 'Expected integer instead of "' + help + '"');
 end;
 
+function InStream.ReadInt64: int64;
+var
+    help: string;
+    code: integer;
+begin
+    while (buffer[bpos] in NumberBefore) do skipchar;
+
+    if (buffer[bpos] = EofChar) then
+        quit(_pe, 'Unexpected end of file - integer expected');
+
+    help := '';
+    while not (buffer[bpos] in NumberAfter) do
+        help := help + nextchar;
+    val(help, result, code);
+    if code <> 0 then Quit(_pe, 'Expected integer instead of "' + help + '"');
+end;
+
 function Instream.readreal: extended;
-var 
+var
     help: string;
     code: integer;
 begin
@@ -445,8 +464,8 @@ end;
 procedure Instream.nextline;
 begin
     while not (buffer[bpos] in EOLNCHAR) do skipchar;
-    if buffer[bpos] = #13 then skipchar; 
-    if buffer[bpos] = #10 then skipchar; 
+    if buffer[bpos] = #13 then skipchar;
+    if buffer[bpos] = #10 then skipchar;
 end;
 
 function Instream.readstring: string;
@@ -470,12 +489,12 @@ initialization
             '<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]');
 
     case paramcount of
-        3: 
+        3:
             begin
                 resultname := '';
                 appesmode := false;
             end;
-        4: 
+        4:
             begin
                 resultname := paramstr(4);
                 appesmode := false;
