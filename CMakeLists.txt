@@ -2,6 +2,24 @@ project(bacs2)
 
 cmake_minimum_required(VERSION 2.8)
 
+if(${CMAKE_COMPILER_IS_GNUCXX})
+	set(gxx_flags "-std=c++0x -Wall -Wextra")
+	if(${UNIX})
+		set(gxx_flags "-pthread ${gxx_flags}")
+	endif()
+	set(CMAKE_CXX_FLAGS_DEBUG "-g ${gxx_flags}")
+	set(CMAKE_CXX_FLAGS_RELEASE "-O2 ${gxx_flags}")
+endif()
+
+include(${CMAKE_SOURCE_DIR}/user-config.cmake OPTIONAL)
+
+# BOOST
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost COMPONENTS system filesystem serialization iostreams unit_test_framework program_options REQUIRED)
+
+include_directories(${Boost_INCLUDE_DIRS})
+
 file(GLOB bacs_srcs bacs2*.cpp)
 
 find_path(mysql_include_dir NAMES mysql.h PATHS /usr/include /usr/include/mysql /usr/local/include /usr/local/include/mysql)
@@ -16,7 +34,7 @@ include_directories(${mysql_include_dir})
 link_directories(${mysql_link_dir})
 
 add_executable(${PROJECT_NAME} main.cpp ${bacs_srcs})
-target_link_libraries(${PROJECT_NAME} mysqlclient rt bunsan_pm_compatibility)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} mysqlclient rt bunsan_pm_compatibility)
 
 add_executable(checkdef checkdef.cpp)
 add_executable(limit_run limit_run.cpp)
