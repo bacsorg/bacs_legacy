@@ -155,7 +155,7 @@ clean=$dst/clean {src}.dir {dir}/Test/
 (T)
 name=Python3
 dir=$dst
-compile=$(which cp) -f {src} {src}.py
+compile=$sources/py3_compile.py {src} {src}.py
 exefile={src}.py
 run=$sources/test_tomoyo $(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
