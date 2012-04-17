@@ -262,6 +262,10 @@ int main(int argn, char ** args)
 			lim.rlim_cur = lim.rlim_max = OUTPUT_LIMIT;
 			setrlimit(RLIMIT_FSIZE, &lim);
 		}
+		{
+			lim.rlim_cur = lim.rlim_max = RLIM_INFINITY;
+			setrlimit(RLIMIT_STACK, &lim);
+		}
 		if (execv(executable, argv))
 		{
 			fprintf(stderr, "Error: can't execve\n");
