@@ -20,6 +20,7 @@ string cf_ping_uri;
 int cf_order;
 int cf_compile_checkers;
 int cf_check_solutions;
+string cf_langs_config;
 
 string nstr;
 string tests_for_check;
@@ -108,7 +109,8 @@ void compile_checker(const string &sid)
 
 bool init_config()
 {
-	if (!config.init(CONFIG_FILE_NAME)) {
+	if (!config.init(CONFIG_FILE_NAME))
+	{
 		fprintf(stderr, "Fatal error: cannot read configuration! Config file: %s\n", CONFIG_FILE_NAME);
 		return false;
 	}
@@ -132,20 +134,26 @@ bool init_config()
 	}
 	cf_compile_checkers = cfgi("general.compile_checkers");
 	cf_check_solutions = cfgi("general.check_solutions");
+	cf_langs_config = cfg("langs.config");
 	boost::property_tree::ptree repo_config;
 	boost::property_tree::read_info(cfg("general.bunsan_repository_config"), repo_config);
 	repository.reset(new bunsan::pm::compatibility::repository(repo_config));
+	if (!langs_config.init(cf_langs_config))
+	{
+		fprintf(stderr, "Fatal error: cannot read langs configuration! Config file: %s\n", cf_langs_config.c_str());
+		return false;
+	}
 	return true;
 }
 
 int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cmd, string &error_log)
 {
-	string pref = "lang." + str_lowercase(lang) + ".";
+	string pref = str_lowercase(lang) + ".";
 	int exit_code;
 	string cmd = lang_str("compile", lang, src_file);
 	if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout) != RUN_OK)
 	{
-		log.add("Error: cannot run compiler!", log.gen_data("Language", cfg(pref + "name"), "Command string", cmd));
+		log.add("Error: cannot run compiler!", log.gen_data("Language", lcfg(pref + "name"), "Command string", cmd));
 		return COMPILE_FAILED;
 	}
 	string tmp_file = lang_str("tmpfile", lang, src_file);
@@ -153,7 +161,7 @@ int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cm
 	string exe_file = lang_str("exefile", lang, src_file);
 	if (!file_exists(exe_file))
 	{
-//		log.add("Error: no exe file!", log.gen_data("Language", cfg(pref + "name"), "EXENAME", exe_file));
+//		log.add("Error: no exe file!", log.gen_data("Language", lcfg(pref + "name"), "EXENAME", exe_file));
 		return COMPILE_ERROR;
 	}
 	if (run_file) run_file->assign(exe_file);

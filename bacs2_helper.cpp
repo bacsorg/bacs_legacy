@@ -36,8 +36,8 @@ void unlock_table()
 string lang_str(cstr key, cstr lang, cstr src)
 {
 	string _lang = str_lowercase(lang);
-	string s = cfg("lang." + _lang + "." + key);
-	string dir = cfg("lang." + _lang + ".dir");
+	string s = lcfg(_lang + "." + key);
+	string dir = lcfg(_lang + ".dir");
 	string srcnoext = src.substr(0, src.find_last_of('.'));
 	str_replace(s, "{src}", src);
 	str_replace(s, "{dir}", dir);

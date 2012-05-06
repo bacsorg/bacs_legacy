@@ -3,31 +3,32 @@
 
 #include <unistd.h>
 #include <string>
-#include <map>
+
+#include <boost/property_tree/ptree.hpp>
+
 #include "bacs2_def.h"
 #include "bacs2_util.h"
 
 using namespace std;
 
-typedef map<string, string> CfgTable;
-
 class CCfgEngine
 {
 private:
-	CfgTable table;
+	boost::property_tree::ptree table;
 	int line;
 	string filename;
-	string pref1, pref2;
-	void parse_line(cstr s);
 public:
 	bool init(cstr _filename);
-	inline string get(cstr key) {return table[key];}
+	string get(cstr key) const;
 };
 
 string cfg(cstr key);
+string lcfg(cstr key);
 int cfgi(cstr key);
+int lcfgi(cstr key);
 double cfgd(cstr key);
 
 extern CCfgEngine config;
+extern CCfgEngine langs_config;
 
 #endif

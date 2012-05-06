@@ -57,7 +57,7 @@ bool CSubmit::compile()
 		status = ST_SECURITY_VIOLATION;
 		return false;
 	}
-	if (cfg("lang." + str_lowercase(lang) + ".name") == "")
+	if (lcfg(str_lowercase(lang) + ".name") == "")
 	{
 		log.add("Error: unknown language!", log.gen_data("Language ID", lang));
 		status = ST_SERVER_ERROR;
@@ -92,7 +92,7 @@ bool CSubmit::test()
 		return false;
 	}
 	int st;
-	int no_ml = cfgi("lang." + str_lowercase(lang) + ".no_memory_limit");
+	int no_ml = lcfgi(str_lowercase(lang) + ".no_memory_limit");
 	if (no_ml)
 		problem.set_no_memory_limit();
 	bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL, acm, test_results);

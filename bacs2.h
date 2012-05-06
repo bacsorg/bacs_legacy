@@ -30,6 +30,7 @@ extern int cf_ping_period;
 extern string cf_ping_uri;
 extern int cf_compile_checkers;
 extern int cf_check_solutions;
+extern string cf_langs_config;
 
 extern string nstr;
 extern string tests_for_check;
