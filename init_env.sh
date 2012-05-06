@@ -45,7 +45,7 @@ EOF
 		cat >bacs2.conf <<EOF
 ; BACS2 Server configuration file
 
-[General]
+[general]
 
 check_submits_delay=5000
 checker_timeout=6000
@@ -76,7 +76,7 @@ b2_compiler=$sources/b2_compiler
 problem_archive_dir=$dst/Archive
 default_checker=$dst/checkdef
 
-[DB]
+[db]
 
 host=$db_host
 user=$db_user
@@ -85,15 +85,19 @@ pass=$db_pass
 database=$db_database
 reconnect=$db_reconnect
 
-[Log]
+[log]
 
 ;output = {none, console, file, both}
 output=both
 log_file=$dst/bacs2.log
 
-[Lang]
+[langs]
+config = $dst/langs.conf
 
-(+)
+EOF
+
+cat >"langs.conf" <<EOF
+[+]
 name=C++ (gnu)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
@@ -101,7 +105,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-(G)
+[G]
 name=GNU C++ (same)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
@@ -109,7 +113,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-(1)
+[1]
 name=C++ 11
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
@@ -117,7 +121,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-(C)
+[C]
 name=C
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
@@ -125,7 +129,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-(P)
+[P]
 name=FPC (Delphi mode)
 dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{src}.exe
@@ -134,7 +138,7 @@ exefile={src}.exe
 run=$sources/test_tomoyo {src}.exe
 clean=$dst/clean {dir}/Test/
 
-(F)
+[F]
 name=FPC (FPC mode)
 dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}.exe
@@ -143,7 +147,7 @@ exefile={src}.exe
 run=$sources/test_tomoyo {src}.exe
 clean=$dst/clean {dir}/Test/
 
-(J)
+[J]
 name=Java
 dir=$dst
 compile={dir}/java_compile {src} Main.java
@@ -152,7 +156,7 @@ exefile={src}.dir/Main.class
 run=$dst/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean=$dst/clean {src}.dir {dir}/Test/
 
-(T)
+[T]
 name=Python3
 dir=$dst
 compile=$sources/py3_compile.py {src} {src}.py
@@ -160,7 +164,7 @@ exefile={src}.py
 run=$sources/test_tomoyo $(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
 
-;(C)
+;[C]
 ;name=C
 ;dir=C:\Bacs2\VC
 ;compile={dir}\Bin\\cl.exe /nologo /EHsc /O2 /Ox /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fo"{src}.obj" /Fe"{src}.exe" /I"{dir}\Include" /Tc"{src}" /link /nologo /LIBPATH:"{dir}\Lib"
@@ -169,14 +173,14 @@ clean=$dst/clean {dir}/Test/
 ;exefile={src}.exe
 ;run={src}.exe
 
-;(D)
+;[D]
 ;name=Delphi
 ;dir=C:\Program Files (x86)\Borland\Delphi7
 ;compile={dir}\Bin\dcc32.exe -Q -CC -$I+,Q-,R-,X+ -U"{dir}\Lib" "{src}"
 ;exefile={src_noext}.exe
 ;run={src_noext}.exe
 
-;(L)
+;[L]
 ;name=Lisp
 ;dir=C:\Bacs2\CLisp
 ;compile={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q -c "{src}" -o "{src}.fas"
@@ -184,14 +188,14 @@ clean=$dst/clean {dir}/Test/
 ;run={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q "{src}.fas"
 
 
-;(G)
+;[G]
 ;name=GNU C++
 ;dir=C:\MinGW\MinGW\Bin
 ;compile={dir}\g++.exe -O2 -x c++ "{src}" -o "{src}.exe"
 ;exefile={src}.exe
 ;run={src}.exe
 
-;(#)
+;[#]
 ;name=C#
 ;dir=C:\WINDOWS\Microsoft.NET\Framework64\v2.0.50727
 ;compile={dir}\csc.exe /nologo /t:exe /checked- /debug- /platform:x86 /o /out:"{src}.exe" "{src}"
