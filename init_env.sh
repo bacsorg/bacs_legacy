@@ -105,7 +105,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-[G]
+[g]
 name=GNU C++ (same)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
@@ -121,7 +121,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-[C]
+[c]
 name=C
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
@@ -129,7 +129,7 @@ exefile={src}.o
 run=$sources/test_tomoyo {src}.o
 clean=$dst/clean {dir}/Test/
 
-[P]
+[p]
 name=FPC (Delphi mode)
 dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{src}.exe
@@ -138,7 +138,7 @@ exefile={src}.exe
 run=$sources/test_tomoyo {src}.exe
 clean=$dst/clean {dir}/Test/
 
-[F]
+[f]
 name=FPC (FPC mode)
 dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}.exe
@@ -147,7 +147,7 @@ exefile={src}.exe
 run=$sources/test_tomoyo {src}.exe
 clean=$dst/clean {dir}/Test/
 
-[J]
+[j]
 name=Java
 dir=$dst
 compile={dir}/java_compile {src} Main.java
@@ -156,7 +156,7 @@ exefile={src}.dir/Main.class
 run=$dst/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
 clean=$dst/clean {src}.dir {dir}/Test/
 
-[T]
+[t]
 name=Python3
 dir=$dst
 compile=$sources/py3_compile.py {src} {src}.py
@@ -164,7 +164,7 @@ exefile={src}.py
 run=$sources/test_tomoyo $(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
 
-;[C]
+;[c]
 ;name=C
 ;dir=C:\Bacs2\VC
 ;compile={dir}\Bin\\cl.exe /nologo /EHsc /O2 /Ox /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fo"{src}.obj" /Fe"{src}.exe" /I"{dir}\Include" /Tc"{src}" /link /nologo /LIBPATH:"{dir}\Lib"
@@ -173,14 +173,14 @@ clean=$dst/clean {dir}/Test/
 ;exefile={src}.exe
 ;run={src}.exe
 
-;[D]
+;[d]
 ;name=Delphi
 ;dir=C:\Program Files (x86)\Borland\Delphi7
 ;compile={dir}\Bin\dcc32.exe -Q -CC -$I+,Q-,R-,X+ -U"{dir}\Lib" "{src}"
 ;exefile={src_noext}.exe
 ;run={src_noext}.exe
 
-;[L]
+;[l]
 ;name=Lisp
 ;dir=C:\Bacs2\CLisp
 ;compile={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q -c "{src}" -o "{src}.fas"
@@ -188,7 +188,7 @@ clean=$dst/clean {dir}/Test/
 ;run={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q "{src}.fas"
 
 
-;[G]
+;[g]
 ;name=GNU C++
 ;dir=C:\MinGW\MinGW\Bin
 ;compile={dir}\g++.exe -O2 -x c++ "{src}" -o "{src}.exe"
