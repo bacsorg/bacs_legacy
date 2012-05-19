@@ -23,8 +23,8 @@ bool CProblem::init(cstr _id)
 	}
 	string cf_fn = dir + "conf.txt";
 	if (!cf.init(cf_fn)) return false;
-	time_limit = s2d(cf.get("tl"), cfgd("general.default_time_limit"));
-	memory_limit = s2d(cf.get("ml"), cfgd("general.default_memory_limit"));
+	time_limit = s2d(cf.get("TL"), cfgd("general.default_time_limit"));
+	memory_limit = s2d(cf.get("ML"), cfgd("general.default_memory_limit"));
 	if (!init_iofiles()) return false;
 	if (!init_checker()) return false;
 	if (!init_tests()) return false;
