@@ -38,23 +38,23 @@ int time_used = 0;
 
 string name_from_filename(const string &fn)
 {
-	int k = (int)fn.find_last_of('/');
-	if (k >= 0) return fn.substr(k + 1);
-	return fn;
+    int k = (int)fn.find_last_of('/');
+    if (k >= 0) return fn.substr(k + 1);
+    return fn;
 }
 
 string dir_from_filename(const string &fn)
 {
-	int k = (int)fn.find_last_of('/');
-	if (k >= 0) return fn.substr(0, k + 1);
-	return fn;
+    int k = (int)fn.find_last_of('/');
+    if (k >= 0) return fn.substr(0, k + 1);
+    return fn;
 }
 
 void writeResults()
 {
-	FILE *f = fopen(RESULT_FILE_NAME, "w");
-	fprintf(f, "%d %d %d %d\n", result, exit_code, memory_used, time_used);
-	fclose(f);
+    FILE *f = fopen(RESULT_FILE_NAME, "w");
+    fprintf(f, "%d %d %d %d\n", result, exit_code, memory_used, time_used);
+    fclose(f);
 }
 
 bool file_exists(const char *fn)
@@ -84,197 +84,197 @@ bool file_exists(const char *fn)
 
 int main(int argn, char ** args)
 {
-	chdir(dir_from_filename(args[0]).c_str());
+    chdir(dir_from_filename(args[0]).c_str());
 
-	if (file_exists(RESULT_FILE_NAME))
-		unlink(RESULT_FILE_NAME);
+    if (file_exists(RESULT_FILE_NAME))
+        unlink(RESULT_FILE_NAME);
 
-	if (argn < 7)
-	{
-		fprintf(stderr, "Error: You should run \"limit_run[0] in.txt[1] out.txt[2] TL[3] ML[4] redirect_stderr(yes/no)[5] RUN_FILE[6...]\"\n");
-		return 1;
-	}
+    if (argn < 7)
+    {
+        fprintf(stderr, "Error: You should run \"limit_run[0] in.txt[1] out.txt[2] TL[3] ML[4] redirect_stderr(yes/no)[5] RUN_FILE[6...]\"\n");
+        return 1;
+    }
 
-	int memory_limit, time_limit;
-	time_limit = atoi(args[3]);
-	memory_limit = atoi(args[4]);
-	string in_fn, out_fn;
+    int memory_limit, time_limit;
+    time_limit = atoi(args[3]);
+    memory_limit = atoi(args[4]);
+    string in_fn, out_fn;
 
-	in_fn = args[1];
-	out_fn = args[2];
-	// argv
-	char *executable = args[6];
-	deque<string> argv_;
-	for (size_t i = 7; args[i]; ++i)
-		argv_.push_back(args[i]);
-	char **argv = args+6;
-	if (name_from_filename(executable)=="java_run")
-	{
-		{
-			stringstream buf;
-			buf<<"-Xss"<<memory_limit;
-			argv_.push_front(buf.str());
-		}
-		{
-			stringstream buf;
-			buf<<"-Xmx"<<memory_limit;
-			argv_.push_front(buf.str());
-		}
-		argv_.push_front(executable);
-		argv = new char*[argv_.size()+1];
-		for (size_t i = 0; i<argv_.size(); ++i)
-		{
-			argv[i] = new char[argv_[i].size()+1];
-			strcpy(argv[i], argv_[i].c_str());
-		}
-		argv[argv_.size()] = 0;
-		memory_limit = 0;
-	}
-	int nid = fork();
-	if (nid < 0)
-	{
-		fprintf(stderr, "Error: can't fork\n");
-		return 1;
-	}
-	if (nid) //parent
-	{
+    in_fn = args[1];
+    out_fn = args[2];
+    // argv
+    char *executable = args[6];
+    deque<string> argv_;
+    for (size_t i = 7; args[i]; ++i)
+        argv_.push_back(args[i]);
+    char **argv = args+6;
+    if (name_from_filename(executable)=="java_run")
+    {
+        {
+            stringstream buf;
+            buf<<"-Xss"<<memory_limit;
+            argv_.push_front(buf.str());
+        }
+        {
+            stringstream buf;
+            buf<<"-Xmx"<<memory_limit;
+            argv_.push_front(buf.str());
+        }
+        argv_.push_front(executable);
+        argv = new char*[argv_.size()+1];
+        for (size_t i = 0; i<argv_.size(); ++i)
+        {
+            argv[i] = new char[argv_[i].size()+1];
+            strcpy(argv[i], argv_[i].c_str());
+        }
+        argv[argv_.size()] = 0;
+        memory_limit = 0;
+    }
+    int nid = fork();
+    if (nid < 0)
+    {
+        fprintf(stderr, "Error: can't fork\n");
+        return 1;
+    }
+    if (nid) //parent
+    {
 
-		rusage lim;
-		int status = 0;
-    		timespec nano_ts;
-    		int step = 200;
-   		nano_ts.tv_nsec = step * 1000000;
-		nano_ts.tv_sec = 0;
-		timespec st;
-		clock_gettime(CLOCK_MONOTONIC, &st);
-		while (1)
-		{
-			if (waitpid(nid, &status, WNOHANG))
-				break;
+        rusage lim;
+        int status = 0;
+            timespec nano_ts;
+            int step = 200;
+        nano_ts.tv_nsec = step * 1000000;
+        nano_ts.tv_sec = 0;
+        timespec st;
+        clock_gettime(CLOCK_MONOTONIC, &st);
+        while (1)
+        {
+            if (waitpid(nid, &status, WNOHANG))
+                break;
 
-			nanosleep(&nano_ts, NULL);
-			if (getrusage(RUSAGE_CHILDREN, &lim))
-			{
-				time_used = 0;
-			}
-			else
-			{
-				time_used = lim.ru_utime.tv_sec * 1000 + lim.ru_utime.tv_usec / 1000;
-			}
+            nanosleep(&nano_ts, NULL);
+            if (getrusage(RUSAGE_CHILDREN, &lim))
+            {
+                time_used = 0;
+            }
+            else
+            {
+                time_used = lim.ru_utime.tv_sec * 1000 + lim.ru_utime.tv_usec / 1000;
+            }
 
-			timespec current_time;
-			clock_gettime(CLOCK_MONOTONIC, &current_time);
+            timespec current_time;
+            clock_gettime(CLOCK_MONOTONIC, &current_time);
 
-			if (current_time.tv_sec >= st.tv_sec+max(time_limit/100, 30) && time_limit != 0)
-			{
-				kill(nid, 9);
-				result = RUN_REALTIMEOUT;
-				exit_code = 0;
-				writeResults();
-				return 0;
-			}
-		}
+            if (current_time.tv_sec >= st.tv_sec+max(time_limit/100, 30) && time_limit != 0)
+            {
+                kill(nid, 9);
+                result = RUN_REALTIMEOUT;
+                exit_code = 0;
+                writeResults();
+                return 0;
+            }
+        }
 
-		if (getrusage(RUSAGE_CHILDREN, &lim))
-		{
-			fprintf(stderr, "Error: can't getrusage\n");
-			memory_used = 0;
-			time_used = 0;
-		}
-		else
-		{
-			memory_used = lim.ru_maxrss * 1024; //you need *BSD to use it
-			time_used = lim.ru_utime.tv_sec * 1000 + lim.ru_utime.tv_usec / 1000;
-		}
+        if (getrusage(RUSAGE_CHILDREN, &lim))
+        {
+            fprintf(stderr, "Error: can't getrusage\n");
+            memory_used = 0;
+            time_used = 0;
+        }
+        else
+        {
+            memory_used = lim.ru_maxrss * 1024; //you need *BSD to use it
+            time_used = lim.ru_utime.tv_sec * 1000 + lim.ru_utime.tv_usec / 1000;
+        }
 
-		exit_code = 0;
-		WEXITSTATUS(status);
-		if (WIFEXITED(status))
-		{
-			result = RUN_OK;
-			exit_code = WEXITSTATUS(status);
-		}
-		else
-		if (WIFSIGNALED(status))
-		{
-			int term_code = WTERMSIG(status);
-/*			if (term_code == SIGKILL)
-			{
-				result = RUN_OK;
-			}
-			else
-*/			if (term_code == SIGXCPU || term_code == SIGALRM ||
-				term_code == SIGVTALRM || term_code == SIGPROF)
-			{
-				result = RUN_TIMEOUT;
-			}
-			else if (term_code == SIGXFSZ)
-			{
-				result = RUN_OUTPUT_LIMIT;
-			}
-			else
-			{
-				result = RUN_ABNORMAL_EXIT;
-			}
-		}
-		else
-		{
-			result = RUN_FAILED;
-		}
+        exit_code = 0;
+        WEXITSTATUS(status);
+        if (WIFEXITED(status))
+        {
+            result = RUN_OK;
+            exit_code = WEXITSTATUS(status);
+        }
+        else
+        if (WIFSIGNALED(status))
+        {
+            int term_code = WTERMSIG(status);
+/*          if (term_code == SIGKILL)
+            {
+                result = RUN_OK;
+            }
+            else
+*/          if (term_code == SIGXCPU || term_code == SIGALRM ||
+                term_code == SIGVTALRM || term_code == SIGPROF)
+            {
+                result = RUN_TIMEOUT;
+            }
+            else if (term_code == SIGXFSZ)
+            {
+                result = RUN_OUTPUT_LIMIT;
+            }
+            else
+            {
+                result = RUN_ABNORMAL_EXIT;
+            }
+        }
+        else
+        {
+            result = RUN_FAILED;
+        }
 
-		if (time_used >= time_limit && time_limit != 0)
-		{
-			result = RUN_TIMEOUT;
-		}
-		else
-		if (memory_used >= memory_limit && memory_limit != 0)
-		{
-			result = RUN_OUT_OF_MEMORY;
-		}
-	}
-	else //child
-	{
-		{
-			FILE *f = fopen(out_fn.c_str(), "w");
-			fclose(f);
-		}
+        if (time_used >= time_limit && time_limit != 0)
+        {
+            result = RUN_TIMEOUT;
+        }
+        else
+        if (memory_used >= memory_limit && memory_limit != 0)
+        {
+            result = RUN_OUT_OF_MEMORY;
+        }
+    }
+    else //child
+    {
+        {
+            FILE *f = fopen(out_fn.c_str(), "w");
+            fclose(f);
+        }
 
-		int fd_in, fd_out;
-		fd_in = open(in_fn.c_str(), O_RDONLY);
-		dup2(fd_in, STDIN_FILENO);
-		fd_out = open(out_fn.c_str(), O_WRONLY);
-		dup2(fd_out, STDOUT_FILENO);
-		if (!strcmp(args[5], "yes"))
-			dup2(fd_out, STDERR_FILENO);
+        int fd_in, fd_out;
+        fd_in = open(in_fn.c_str(), O_RDONLY);
+        dup2(fd_in, STDIN_FILENO);
+        fd_out = open(out_fn.c_str(), O_WRONLY);
+        dup2(fd_out, STDOUT_FILENO);
+        if (!strcmp(args[5], "yes"))
+            dup2(fd_out, STDERR_FILENO);
 
-		rlimit lim;
-		if (memory_limit)
-		{
-			lim.rlim_cur = lim.rlim_max = memory_limit + ADD_TO_CHECK;
-			setrlimit(RLIMIT_AS, &lim);
-		}
-		if (time_limit)
-		{
-			lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
-			setrlimit(RLIMIT_CPU, &lim);
-		}
-		{
-			lim.rlim_cur = lim.rlim_max = OUTPUT_LIMIT;
-			setrlimit(RLIMIT_FSIZE, &lim);
-		}
-		{
-			lim.rlim_cur = lim.rlim_max = RLIM_INFINITY;
-			setrlimit(RLIMIT_STACK, &lim);
-		}
-		if (execv(executable, argv))
-		{
-			fprintf(stderr, "Error: can't execve\n");
-			return 1;
-		}
-		return 2;
-	}
-	writeResults();
+        rlimit lim;
+        if (memory_limit)
+        {
+            lim.rlim_cur = lim.rlim_max = memory_limit + ADD_TO_CHECK;
+            setrlimit(RLIMIT_AS, &lim);
+        }
+        if (time_limit)
+        {
+            lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
+            setrlimit(RLIMIT_CPU, &lim);
+        }
+        {
+            lim.rlim_cur = lim.rlim_max = OUTPUT_LIMIT;
+            setrlimit(RLIMIT_FSIZE, &lim);
+        }
+        {
+            lim.rlim_cur = lim.rlim_max = RLIM_INFINITY;
+            setrlimit(RLIMIT_STACK, &lim);
+        }
+        if (execv(executable, argv))
+        {
+            fprintf(stderr, "Error: can't execve\n");
+            return 1;
+        }
+        return 2;
+    }
+    writeResults();
 
-	return 0;
+    return 0;
 }
 
