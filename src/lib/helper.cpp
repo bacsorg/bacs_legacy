@@ -1,4 +1,6 @@
-#include "bacs2.h"
+#include "common.hpp"
+
+namespace bacs {
 
 string status_to_str(int status)
 {
@@ -45,3 +47,4 @@ string lang_str(cstr key, cstr lang, cstr src)
     return s;
 }
 
+} // bacs

@@ -1,4 +1,6 @@
-#include "bacs2_pipes.h"
+#include "pipes.hpp"
+
+namespace bacs {
 
 CPipe::CPipe()
 {
@@ -63,3 +65,5 @@ bool CPipe::pread(string &s)
     }
 */  return true;
 }
+
+} // bacs

@@ -1,11 +1,13 @@
-#include "bacs2.h"
+#include "common.hpp"
+
+#include <boost/filesystem.hpp>
+
+namespace bacs {
 
 CProblem::CProblem()
 {
     fatal_error = false;
 }
-
-#include <boost/filesystem.hpp>
 
 bool CProblem::init(cstr _id)
 {
@@ -234,3 +236,4 @@ void CProblem::set_no_memory_limit()
     memory_limit = 0.;
 }
 
+} // bacs

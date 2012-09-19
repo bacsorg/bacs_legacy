@@ -1,4 +1,6 @@
-#include "bacs2.h"
+#include "common.hpp"
+
+namespace bacs {
 
 int CTest::parse_id(cstr fn)
 {
@@ -15,3 +17,4 @@ CTest::CTest(cstr _file_in)
     id = parse_id(file_in);
 }
 
+} // bacs

@@ -1,4 +1,6 @@
-#include "bacs2_log.h"
+#include "log.hpp"
+
+namespace bacs {
 
 CLogEngine log;
 LogEntryData _no_data;
@@ -95,3 +97,5 @@ void CLogEngine::add_working_notify()
         fflush(stdout);
     }
 }
+
+} // bacs

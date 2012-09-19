@@ -1,4 +1,9 @@
-#include "bacs2.h"
+#include "common.hpp"
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/info_parser.hpp>
+
+namespace bacs {
 
 enum
 {
@@ -21,6 +26,9 @@ int cf_order;
 int cf_compile_checkers;
 int cf_check_solutions;
 string cf_langs_config;
+
+uid_t cf_uid;
+gid_t cf_gid;
 
 string nstr;
 string tests_for_check;
@@ -104,9 +112,6 @@ void compile_checker(const string &sid)
     }
 }
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/info_parser.hpp>
-
 bool init_config()
 {
     if (!config.init(CONFIG_FILE_NAME))
@@ -135,6 +140,8 @@ bool init_config()
     cf_compile_checkers = cfgi("general.compile_checkers");
     cf_check_solutions = cfgi("general.check_solutions");
     cf_langs_config = cfg("langs.config");
+    cf_uid = cfgi("general.uid");
+    cf_gid = cfgi("general.gid");
     boost::property_tree::ptree repo_config;
     boost::property_tree::read_info(cfg("general.bunsan_repository_config"), repo_config);
     repository.reset(new bunsan::pm::compatibility::repository(repo_config));
@@ -202,3 +209,4 @@ bool check_iofile_name(cstr fn)
     return true;
 }
 
+} // bacs

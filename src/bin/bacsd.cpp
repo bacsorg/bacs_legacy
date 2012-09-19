@@ -1,8 +1,10 @@
-#include "bacs2.h"
+#include "common.hpp"
 
 #include <clocale>
 #include <csignal>
 #include <cassert>
+
+namespace bacs {
 
 namespace
 {
@@ -116,6 +118,8 @@ void init_env()
 
 int main(int argc, char **argv)
 {
+    using namespace bacs;
+
     if (!siginit())
         return 2;
     init_env();
@@ -150,3 +154,9 @@ int main(int argc, char **argv)
     return exit_code;
 }
 
+} // bacs
+
+int main(int argc, char **argv)
+{
+    return bacs::main(argc, argv);
+}

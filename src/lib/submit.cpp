@@ -1,4 +1,6 @@
-#include "bacs2.h"
+#include "common.hpp"
+
+namespace bacs {
 
 bool test_submit(cstr sid)
 {
@@ -151,3 +153,4 @@ bool CSubmit::security_check()
     return res;
 }
 
+} // bacs

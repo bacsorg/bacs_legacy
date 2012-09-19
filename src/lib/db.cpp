@@ -1,7 +1,6 @@
-#include "bacs2_db.h"
+#include "db.hpp"
 
-//#pragma comment(lib, "mysqlclient")
-//#pragma link "mysqlclient"
+namespace bacs {
 
 CDBEngine db;
 
@@ -144,3 +143,5 @@ CDBQuery::~CDBQuery()
 {
     if (result) mysql_free_result(result);
 }
+
+} // bacs

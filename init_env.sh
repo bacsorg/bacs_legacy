@@ -76,6 +76,9 @@ b2_compiler=$sources/b2_compiler
 problem_archive_dir=$dst/Archive
 default_checker=$dst/checkdef
 
+uid=$UID
+gid=$GID
+
 [db]
 
 host=$db_host

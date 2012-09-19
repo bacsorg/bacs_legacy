@@ -1,5 +1,4 @@
-#ifndef _BACS2_UTIL_H_
-#define _BACS2_UTIL_H_
+#pragma once
 
 #define _CRT_SECURE_NO_DEPRECATE
 #define _CRT_RAND_S
@@ -13,7 +12,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include "bacs2_def.h"
+#include "def.hpp"
+
+namespace bacs {
 
 using namespace std;
 
@@ -39,4 +40,4 @@ void chdir(cstr dir);
 
 bool success_ret(const char *file, int line, int ret);
 
-#endif
+} // bacs

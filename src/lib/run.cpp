@@ -1,6 +1,8 @@
-#include "bacs2_run.h"
+#include "run.hpp"
 
 #include <cstdlib>
+
+namespace bacs {
 
 int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int memory_limit, int &time_used, int &memory_used, const bool redirect_stderr = true)
 {
@@ -165,3 +167,5 @@ int run_fio(cstr cmd, int *exit_code, cstr file_in, string &file_out, int timeou
     }
     return result;
 }
+
+} // basc

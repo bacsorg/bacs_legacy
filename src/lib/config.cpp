@@ -1,6 +1,8 @@
-#include "bacs2_config.h"
+#include "config.hpp"
 
 #include <boost/property_tree/ini_parser.hpp>
+
+namespace bacs {
 
 CCfgEngine config, langs_config;
 
@@ -49,3 +51,4 @@ string CCfgEngine::get(cstr key) const
     return table.get<std::string>(key, string());
 }
 
+} // bacs

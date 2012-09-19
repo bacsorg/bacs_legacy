@@ -1,10 +1,11 @@
-#ifndef _BACS2_DEF_H_
-#define _BACS2_DEF_H_
+#pragma once
 
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <string>
 #include <sstream>
+
+namespace bacs {
 
 using namespace std;
 
@@ -56,4 +57,4 @@ typedef const string & cstr;
 
 #define JOB_QUERY_PERIOD 500
 
-#endif
+} // bacs

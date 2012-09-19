@@ -1,4 +1,6 @@
-#include "bacs2_tempfiles.h"
+#include "tempfiles.hpp"
+
+namespace bacs {
 
 char random_char()
 {
@@ -66,3 +68,5 @@ string CTempFile::read(int max_size)
     }
     return res;
 }
+
+} // bacs

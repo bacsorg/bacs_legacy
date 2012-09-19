@@ -1,7 +1,10 @@
-#include "bacs2_util.h"
-#include "bacs2_log.h"
+#include "util.hpp"
+#include "log.hpp"
 
 #include <cstring>
+#include <cstdlib>
+
+namespace bacs {
 
 static const int MAX_BIG_BUF = 1<<16 + 1;
 static char big_buf[MAX_BIG_BUF];
@@ -141,11 +144,9 @@ void str_replace(string &s, cstr subs, cstr news)
 
 
 
-#include <cstdlib>
-
 int random(int max_num)
 {
-    long int rnd = random();
+    long int rnd = ::random();
     return (int)((double)rnd / (double)RAND_MAX * max_num);
 }
 
@@ -217,7 +218,7 @@ bool delete_file(cstr filename)
 
 void chdir(cstr dir)
 {
-    chdir(dir.c_str());
+    ::chdir(dir.c_str());
 }
 
 bool success_ret(const char *file, int line, int ret)
@@ -231,3 +232,4 @@ bool success_ret(const char *file, int line, int ret)
         return true;
 }
 
+} // bacs
