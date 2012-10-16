@@ -34,7 +34,7 @@ do
 		mkdir -p "$dst"
 		cd "$dst"
 		cmake "$sources"
-		make
+		make -j6
 		mkdir -p Test Temp Archive
 		cat >java.policy <<EOF
 grant {
@@ -162,7 +162,7 @@ clean=$dst/clean {src}.dir {dir}/Test/
 [t]
 name=Python3
 dir=$dst
-compile=$sources/py3_compile.py {src} {src}.py
+compile=$sources/src/bin/py3_compile.py {src} {src}.py
 exefile={src}.py
 run=$sources/test_tomoyo $(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
