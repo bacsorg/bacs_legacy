@@ -1,8 +1,5 @@
 #include "common.hpp"
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/info_parser.hpp>
-
 namespace bacs {
 
 enum
@@ -142,9 +139,7 @@ bool init_config()
     cf_langs_config = cfg("langs.config");
     cf_uid = cfgi("general.uid");
     cf_gid = cfgi("general.gid");
-    boost::property_tree::ptree repo_config;
-    boost::property_tree::read_info(cfg("general.bunsan_repository_config"), repo_config);
-    repository.reset(new bunsan::pm::compatibility::repository(repo_config));
+    repository.reset(new bunsan::pm::compatibility::repository(cfg("general.bunsan_repository_config")));
     if (!langs_config.init(cf_langs_config))
     {
         fprintf(stderr, "Fatal error: cannot read langs configuration! Config file: %s\n", cf_langs_config.c_str());
