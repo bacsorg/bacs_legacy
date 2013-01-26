@@ -16,7 +16,7 @@ bool CProblem::init(cstr _id)
     boost::filesystem::create_directories(dir);
     try
     {
-        repository->extract(cfg("general.repository_prefix")+id, dir);
+        repository->extract(cfg("general.repository_prefix") + id + cfg("general.repository_suffix"), dir);
     }
     catch (std::exception &e)
     {
