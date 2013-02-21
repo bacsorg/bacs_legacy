@@ -168,6 +168,13 @@ exefile={src}.py
 run=$(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
 
+[#]
+name=Mono C#
+dir=$dst
+compile=$(which mcs) {src} -o {src_noext}.exe
+exefile={src_noext}.exe
+run=$(which mono) {src_noext}.exe
+
 ;[c]
 ;name=C
 ;dir=C:\Bacs2\VC
