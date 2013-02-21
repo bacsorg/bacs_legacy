@@ -106,7 +106,7 @@ name=C++ (gnu)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$sources/test_tomoyo {src}.o
+run={src}.o
 clean=$dst/clean {dir}/Test/
 
 [g]
@@ -114,7 +114,7 @@ name=GNU C++ (same)
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$sources/test_tomoyo {src}.o
+run={src}.o
 clean=$dst/clean {dir}/Test/
 
 [1]
@@ -122,7 +122,7 @@ name=C++ 11
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
 exefile={src}.o
-run=$sources/test_tomoyo {src}.o
+run={src}.o
 clean=$dst/clean {dir}/Test/
 
 [c]
@@ -130,7 +130,7 @@ name=C
 dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
 exefile={src}.o
-run=$sources/test_tomoyo {src}.o
+run={src}.o
 clean=$dst/clean {dir}/Test/
 
 [p]
@@ -139,7 +139,7 @@ dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
-run=$sources/test_tomoyo {src}.exe
+run={src}.exe
 clean=$dst/clean {dir}/Test/
 
 [f]
@@ -148,7 +148,7 @@ dir=$dst
 compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}.exe
 tmpfile={src_noext}.o
 exefile={src}.exe
-run=$sources/test_tomoyo {src}.exe
+run={src}.exe
 clean=$dst/clean {dir}/Test/
 
 [j]
@@ -165,7 +165,7 @@ name=Python3
 dir=$dst
 compile=$sources/src/bin/py3_compile.py {src} {src}.py
 exefile={src}.py
-run=$sources/test_tomoyo $(which python3) {src}.py
+run=$(which python3) {src}.py
 clean=$dst/clean {dir}/Test/
 
 ;[c]
