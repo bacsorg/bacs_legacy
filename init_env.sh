@@ -8,7 +8,7 @@ sources="$(dirname "$0")"
 
 if [[ ${sources:0:1} != / ]]
 then
-	sources="$PWD/$sources"
+    sources="$PWD/$sources"
 fi
 
 # default config
@@ -22,27 +22,27 @@ shift
 
 for i
 do
-	dst="$i"
-	if [[ ${dst:0:1} != / ]]
-	then
-		dst="$PWD/$dst"
-	fi
-	if false #[ -e "$dst" ]
-	then
-		echo "Remove \"$dst\" if you want to init environment in it" >&2
-	else
-		mkdir -p "$dst"
-		cd "$dst"
-		cmake "$sources"
-		make -j6
-		mkdir -p Test Temp Archive
-		cat >java.policy <<EOF
+    dst="$i"
+    if [[ ${dst:0:1} != / ]]
+    then
+        dst="$PWD/$dst"
+    fi
+    if false #[ -e "$dst" ]
+    then
+        echo "Remove \"$dst\" if you want to init environment in it" >&2
+    else
+        mkdir -p "$dst"
+        cd "$dst"
+        cmake "$sources"
+        make -j6
+        mkdir -p Test Temp Archive
+        cat >java.policy <<EOF
 grant {
-	permission java.io.FilePermission "*", "read,write";
+    permission java.io.FilePermission "*", "read,write";
 };
 
 EOF
-		cat >bacs2.conf <<EOF
+        cat >bacs2.conf <<EOF
 ; BACS2 Server configuration file
 
 [general]
@@ -214,7 +214,6 @@ run=$(which mono) {src_noext}.exe
 ;run={src}.exe
 
 EOF
-	cd ..
-	fi
+    cd ..
+    fi
 done
-
