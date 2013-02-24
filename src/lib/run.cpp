@@ -9,7 +9,7 @@ int _run(cstr cmd, int *exit_code, cstr fn_in, cstr fn_out, int timeout, int mem
     string redir = "no ";
     if (redirect_stderr)
         redir = "yes ";
-    string run_cmd = (cfg("general.limit_run_exe")+" "+fn_in+" "+
+    string run_cmd = (cfg("general.limit_run_exe")+" "+cfg("general.test_dir")+" "+fn_in+" "+
         fn_out+" "+i2s(timeout)+" "+i2s(memory_limit)+" "+redir+cmd);
     //log.add(run_cmd.c_str());
     int ret = system(run_cmd.c_str());

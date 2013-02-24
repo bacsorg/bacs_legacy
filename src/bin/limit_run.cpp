@@ -84,30 +84,28 @@ bool file_exists(const char *fn)
 
 int main(int argn, char ** args)
 {
-    chdir(dir_from_filename(args[0]).c_str());
-
     if (file_exists(RESULT_FILE_NAME))
         unlink(RESULT_FILE_NAME);
 
     if (argn < 7)
     {
-        fprintf(stderr, "Error: You should run \"limit_run[0] in.txt[1] out.txt[2] TL[3] ML[4] redirect_stderr(yes/no)[5] RUN_FILE[6...]\"\n");
+        fprintf(stderr, "Error: You should run \"limit_run[0] cwd[1] in.txt[2] out.txt[3] TL[4] ML[5] redirect_stderr(yes/no)[6] RUN_FILE[7...]\"\n");
         return 1;
     }
 
     int memory_limit, time_limit;
-    time_limit = atoi(args[3]);
-    memory_limit = atoi(args[4]);
+    time_limit = atoi(args[4]);
+    memory_limit = atoi(args[5]);
     string in_fn, out_fn;
 
-    in_fn = args[1];
-    out_fn = args[2];
+    in_fn = args[2];
+    out_fn = args[3];
     // argv
-    char *executable = args[6];
+    char *executable = args[7];
     deque<string> argv_;
-    for (size_t i = 7; args[i]; ++i)
+    for (size_t i = 8; args[i]; ++i)
         argv_.push_back(args[i]);
-    char **argv = args+6;
+    char **argv = args+7;
     if (name_from_filename(executable)=="java_run")
     {
         {
@@ -244,7 +242,7 @@ int main(int argn, char ** args)
         dup2(fd_in, STDIN_FILENO);
         fd_out = open(out_fn.c_str(), O_WRONLY);
         dup2(fd_out, STDOUT_FILENO);
-        if (!strcmp(args[5], "yes"))
+        if (!strcmp(args[6], "yes"))
             dup2(fd_out, STDERR_FILENO);
 
         rlimit lim;
@@ -265,6 +263,12 @@ int main(int argn, char ** args)
         {
             lim.rlim_cur = lim.rlim_max = RLIM_INFINITY;
             setrlimit(RLIMIT_STACK, &lim);
+        }
+
+        if (chdir(args[1]))
+        {
+            perror("chdir");
+            return 1;
         }
         if (execv(executable, argv))
         {
