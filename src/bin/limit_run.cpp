@@ -28,7 +28,7 @@ using namespace std;
 #define RUN_REALTIMEOUT 5
 #define RUN_OUTPUT_LIMIT 6
 #define RESULT_FILE_NAME "lim_run_results.txt"
-#define ADD_TO_CHECK 8000000
+#define MEMORY_LIMIT (1536*1024*1024) // 1.5 GiB
 #define OUTPUT_LIMIT (256*1024*1024) // 256 MiB
 
 int result = -1;
@@ -248,7 +248,7 @@ int main(int argn, char ** args)
         rlimit lim;
         if (memory_limit)
         {
-            lim.rlim_cur = lim.rlim_max = memory_limit + ADD_TO_CHECK;
+            lim.rlim_cur = lim.rlim_max = MEMORY_LIMIT;
             setrlimit(RLIMIT_AS, &lim);
         }
         if (time_limit)
