@@ -4,38 +4,26 @@ include(${CMAKE_SOURCE_DIR}/system-config.cmake OPTIONAL)
 
 cmake_minimum_required(VERSION 2.8)
 
-include(YandexContestCommon)
+include(BunsanCommon)
 
-# BOOST
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS system filesystem serialization unit_test_framework program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-list(APPEND libraries ${Boost_LIBRARIES})
+bunsan_use_boost(system filesystem)
 
 # MySQL
 find_path(mysql_include_dir NAMES mysql.h PATHS /usr/include /usr/include/mysql /usr/local/include /usr/local/include/mysql)
 find_path(mysql_link_dir NAMES libmysqlclient.so PATHS /usr/lib /usr/lib/mysql /usr/local/lib /usr/local/lib/mysql)
-
 message(STATUS "mysql.h was found in ${mysql_include_dir}")
 message(STATUS "libmysqlclient.so was found in ${mysql_include_dir}")
-
 include_directories(${mysql_include_dir})
 link_directories(${mysql_link_dir})
+bunsan_use(mysqlclient)
 
-list(APPEND libraries mysqlclient)
-
-# bunsan
-list(APPEND libraries bunsan_pm_compatibility)
-
-# rt
-list(APPEND libraries rt)
+bunsan_use_bunsan(pm_compatibility)
 
 # Local
 include_directories(include/bacs)
 
 # Targets
-add_library(${PROJECT_NAME} SHARED
+bunsan_add_shared_library(${PROJECT_NAME}
     src/lib/helper.cpp
     src/lib/test.cpp
     src/lib/db.cpp
@@ -49,10 +37,9 @@ add_library(${PROJECT_NAME} SHARED
     src/lib/config.cpp
     src/lib/submit.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${libraries})
+bunsan_use(${PROJECT_NAME})
 
-add_executable(${PROJECT_NAME}d src/bin/bacsd.cpp)
-target_link_libraries(${PROJECT_NAME}d ${PROJECT_NAME} ${libraries})
+bunsan_add_executable(${PROJECT_NAME}d src/bin/bacsd.cpp)
 
 add_executable(checkdef src/bin/checkdef.cpp)
 add_executable(limit_run src/bin/limit_run.cpp)
