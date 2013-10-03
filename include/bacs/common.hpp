@@ -152,15 +152,18 @@ enum ping_type
 
 inline void ping(ping_type type, const std::string &submit_id=std::string(), int test=-1, const std::string &problem_id=std::string(), std::string result=std::string())
 {
-    str_replace(result, " ", "_");
-    system(format("curl --silent --output /dev/null '%s?type=%d&submit_id=%s&test=%d&problem_id=%s&result=%s'",
-        cf_ping_uri.c_str(),
-        type,
-        submit_id.c_str(),
-        test,
-        problem_id.c_str(),
-        result.c_str()
-    ).c_str());
+    if (!cf_ping_uri.empty())
+    {
+        str_replace(result, " ", "_");
+        system(format("curl --silent --output /dev/null '%s?type=%d&submit_id=%s&test=%d&problem_id=%s&result=%s'",
+            cf_ping_uri.c_str(),
+            type,
+            submit_id.c_str(),
+            test,
+            problem_id.c_str(),
+            result.c_str()
+        ).c_str());
+    }
 }
 
 } // bacs
