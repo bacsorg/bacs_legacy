@@ -171,7 +171,7 @@ clean=$dst/clean {dir}/Test/
 [#]
 name=Mono C#
 dir=$dst
-compile=$(which dmcs) {src} -o {src_noext}.exe
+compile=$(which dmcs) -out:{src_noext}.exe {src}
 exefile={src_noext}.exe
 run=$(which mono) {src_noext}.exe
 
