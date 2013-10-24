@@ -139,12 +139,12 @@ int main(int argc, char **argv)
     }
     log.add("Starting new session...");
 
-    if (!db.connect()) {
+    while (!db.connect()) {
         log.add_error(__FILE__, __LINE__, "Fatal error: cannot connect to database!");
-        return 1;
+        if (wait_cycle())
+            return 1;
     }
     log.add("Connected to database.");
-
 
     check_thread_proc();
 
