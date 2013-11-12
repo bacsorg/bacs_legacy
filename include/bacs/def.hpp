@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 
+#include <bunsan/stream_enum.hpp>
+
 namespace bacs {
 
 using namespace std;
@@ -15,43 +17,61 @@ typedef const string & cstr;
 
 #define CONFIG_FILE_NAME "bacs2.conf"
 
-#define ST_SERVER_ERROR 0
-#define ST_ACCEPTED 1
-#define ST_COMPILE_ERROR 2
-#define ST_MEMORY_LIMIT 3
-#define ST_TIME_LIMIT 4
-#define ST_RUNTIME_ERROR 5
-#define ST_WRONG_ANSWER 6
-#define ST_PRESENTATION_ERROR 7
-#define ST_SECURITY_VIOLATION 8
-#define ST_INVALID_PROBLEM 9
-#define ST_REALTIME_LIMIT 10
-#define ST_OUTPUT_LIMIT 11
-#define ST_PENDING 100
-#define ST_RUNNING 101
+BUNSAN_STREAM_ENUM_INITIALIZED(ST,
+(
+    (ST_SERVER_ERROR, 0),
+    (ST_ACCEPTED, 1),
+    (ST_COMPILE_ERROR, 2),
+    (ST_MEMORY_LIMIT, 3),
+    (ST_TIME_LIMIT, 4),
+    (ST_RUNTIME_ERROR, 5),
+    (ST_WRONG_ANSWER, 6),
+    (ST_PRESENTATION_ERROR, 7),
+    (ST_SECURITY_VIOLATION, 8),
+    (ST_INVALID_PROBLEM, 9),
+    (ST_REALTIME_LIMIT, 10),
+    (ST_OUTPUT_LIMIT, 11),
+    (ST_PENDING, 100),
+    (ST_RUNNING, 101)
+))
 
-#define STATE_NO 0
-#define STATE_COMPILING 1
+BUNSAN_STREAM_ENUM_INITIALIZED(STATE,
+(
+    (STATE_NO, 0),
+    (STATE_COMPILING, 1)
+))
 
-#define SOURCE_TYPE_SUBMIT 1
-#define SOURCE_TYPE_CHECKER 2
+BUNSAN_STREAM_ENUM_INITIALIZED(SOURCE_TYPE,
+(
+    (SOURCE_TYPE_SUBMIT, 1),
+    (SOURCE_TYPE_CHECKER, 2)
+))
 
-#define RUN_OK 0
-#define RUN_FAILED 1
-#define RUN_TIMEOUT 2
-#define RUN_OUT_OF_MEMORY 3
-#define RUN_ABNORMAL_EXIT 4
-#define RUN_REALTIMEOUT 5
-#define RUN_OUTPUT_LIMIT 6
+BUNSAN_STREAM_ENUM_INITIALIZED(RUN,
+(
+    (RUN_OK, 0),
+    (RUN_FAILED, 1),
+    (RUN_TIMEOUT, 2),
+    (RUN_OUT_OF_MEMORY, 3),
+    (RUN_ABNORMAL_EXIT, 4),
+    (RUN_REALTIMEOUT, 5),
+    (RUN_OUTPUT_LIMIT, 6)
+))
 
-#define CHECK_RES_OK 0
-#define CHECK_RES_WA 5
-#define CHECK_RES_PE 4
-#define CHECK_RES_WA_OLD 2
+BUNSAN_STREAM_ENUM_INITIALIZED(CHECK_RES,
+(
+    (CHECK_RES_OK, 0),
+    (CHECK_RES_WA, 5),
+    (CHECK_RES_PE, 4),
+    (CHECK_RES_WA_OLD, 2)
+))
 
-#define COMPILE_OK 0
-#define COMPILE_ERROR 1
-#define COMPILE_FAILED 2
+BUNSAN_STREAM_ENUM_INITIALIZED(COMPILE,
+(
+    (COMPILE_OK, 0),
+    (COMPILE_ERROR, 1),
+    (COMPILE_FAILED, 2)
+))
 
 #define INVALID_ID 9999
 
