@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
+#include <boost/scope_exit.hpp>
 
 namespace bacs {
 
@@ -55,6 +56,15 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
     test_num_failed = -1;
     test_results.clear();
     boost::optional<boost::filesystem::path> verbose_path;
+    BOOST_SCOPE_EXIT_ALL(&verbose_path)
+    {
+        try
+        {
+            if (verbose_path && boost::filesystem::exists(*verbose_path))
+                boost::filesystem::remove_all(*verbose_path);
+        }
+        catch (...) {}
+    };
     for (i = 0; i < (int)test.size(); ++i)
     {
         ping(running, "", i, id);
@@ -63,9 +73,9 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
         if (tt.verbose)
         {
             if (!verbose_path)
-                verbose_path = tt.verbose->parent_path().parent_path();
+                verbose_path = tt.verbose->parent_path();
             else
-                BOOST_ASSERT(*verbose_path == tt.verbose->parent_path().parent_path());
+                BOOST_ASSERT(*verbose_path == tt.verbose->parent_path());
             boost::filesystem::create_directories(*tt.verbose);
             boost::filesystem::copy_file(tt.file_in, *tt.verbose / "input");
             boost::filesystem::copy_file(tt.file_out, *tt.verbose / "hint");
@@ -116,9 +126,20 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
     result = first_res;
     if (verbose_path)
     {
+        const boost::filesystem::path verbose_path_ar = verbose_path->parent_path() / (verbose_path->filename().string() + ".tgz");
+        BOOST_SCOPE_EXIT_ALL(&verbose_path_ar)
         {
+            try
+            {
+                boost::filesystem::remove(verbose_path_ar);
+            }
+            catch (...) {}
+        };
+        {
+            if (boost::filesystem::exists(verbose_path_ar))
+                boost::filesystem::remove_all(verbose_path_ar);
             std::ostringstream cmd;
-            cmd << "zip -r " << *verbose_path << ".zip " << *verbose_path;
+            cmd << "cd " << verbose_path_ar.parent_path() << " && tar cf " << verbose_path_ar.filename() << ' ' << verbose_path->filename();
             const int ret = system(cmd.str().c_str());
             if (!WIFEXITED(ret) || WEXITSTATUS(ret) != 0)
                 return false;
@@ -126,7 +147,7 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
         if (!cf_verbose_tests_server.empty())
         {
             std::ostringstream cmd;
-            cmd << cf_verbose_tests_copy << ' ' << *verbose_path << ".zip " << cf_verbose_tests_server + "/" + verbose_path->filename().string();
+            cmd << cf_verbose_tests_copy << ' ' << verbose_path_ar << ' ' << cf_verbose_tests_server << "/" << verbose_path_ar.filename().string();
             const int ret = system(cmd.str().c_str());
             if (!WIFEXITED(ret) || WEXITSTATUS(ret) != 0)
                 return false;
@@ -157,11 +178,11 @@ bool CProblem::init_tests(cstr submit_id)
                     format(
                         "select 1 from verbose_test where submit_id = %s AND (test_id = %d OR test_id = NULL)",
                         submit_id.c_str(),
-                        test[i].id
+                        t.id
                     )
                 ) == "1";
             if (verbose_test)
-                t.verbose = verbose_tmpdir / boost::lexical_cast<std::string>(test[i].id);
+                t.verbose = verbose_tmpdir / boost::lexical_cast<std::string>(t.id);
             test.push_back(t);
         }
     }
