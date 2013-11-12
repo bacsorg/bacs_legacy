@@ -18,6 +18,9 @@
 #include "run.hpp"
 #include "legacy.hpp"
 
+#include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
+
 #include <sys/types.h>
 
 namespace bacs {
@@ -35,6 +38,8 @@ extern string cf_ping_uri;
 extern int cf_compile_checkers;
 extern int cf_check_solutions;
 extern string cf_langs_config;
+extern string cf_verbose_tests_copy;
+extern string cf_verbose_tests_server;
 
 extern uid_t cf_uid;
 extern gid_t cf_gid;
@@ -105,6 +110,7 @@ class CTest
 public:
     int id;
     string file_in, file_out;
+    boost::optional<boost::filesystem::path> verbose;
     static int parse_id(cstr fn);
     CTest(cstr _file_in);
 };
@@ -121,17 +127,16 @@ class CProblem
     string checker;
     bool init_checker();
     bool init_iofiles();
-    bool init_tests();
+    bool init_tests(cstr submit_id);
     CCfgEngine cf;
 public:
     void set_no_memory_limit();
     inline bool is_fatal_error() {return fatal_error;}
     CProblem();
     ~CProblem();
-    bool init(cstr _id);
+    bool init(cstr _id, cstr submit_id);
     bool run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_time, double &max_memory, int &test_num_failed, string *info, bool acm=true, string & test_results = nstr);
     bool run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &result, double &time_used, double &memory_used, string *info);
-    inline bool dbg_init_tests() {return init_tests();}
 };
 
 extern int check_thread;

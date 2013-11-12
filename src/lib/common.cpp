@@ -24,6 +24,9 @@ int cf_compile_checkers;
 int cf_check_solutions;
 string cf_langs_config;
 
+string cf_verbose_tests_copy;
+string cf_verbose_tests_server;
+
 uid_t cf_uid;
 gid_t cf_gid;
 
@@ -134,6 +137,8 @@ bool init_config()
         else
             return false;
     }
+    cf_verbose_tests_copy = cfg("general.verbose_tests_copy");
+    cf_verbose_tests_server = cfg("general.verbose_tests_server");
     cf_compile_checkers = cfgi("general.compile_checkers");
     cf_check_solutions = cfgi("general.check_solutions");
     cf_langs_config = cfg("langs.config");

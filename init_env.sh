@@ -61,6 +61,9 @@ bunsan_repository_config=$bunsan_pm_config
 repository_prefix=bacs/problem/
 repository_suffix=/legacy0
 
+verbose_tests_copy=${verbose_tests_copy}
+verbose_tests_server=${verbose_tests_server}
+
 order=${cf_order}
 
 compile_checkers=$cf_compile_checkers

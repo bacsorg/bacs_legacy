@@ -88,7 +88,7 @@ bool CSubmit::compile()
 bool CSubmit::test()
 {
     CProblem problem;
-    if (!problem.init(pid)) {
+    if (!problem.init(pid, sid)) {
         log.add("Error initializing problem data!", log.gen_data("Problem ID", pid));
         status = ST_INVALID_PROBLEM;
         return false;
