@@ -274,12 +274,12 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
         int res2 = run(checker_cmd, &ex, true, "", checker_out, cf_checker_timeout);
         if (res2 == RUN_FAILED || res2 == RUN_ABNORMAL_EXIT) {
             log.add_error(__FILE__, __LINE__, "Error: cannot run checker!", log.gen_data("Run command", checker_cmd));
-            result = ST_SERVER_ERROR;
+            result = ST_CHECKER_ERROR;
             ok = false;
         }
         else if (res2 == RUN_TIMEOUT) {
             log.add_error(__FILE__, __LINE__, "Error: checker timed out!", log.gen_data("Run command", checker_cmd, "Checker output", checker_out));
-            result = ST_SERVER_ERROR;
+            result = ST_CHECKER_ERROR;
             ok = false;
         }
         else
@@ -302,7 +302,7 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
             else if (ex == CHECK_RES_PE) result = ST_PRESENTATION_ERROR;
             else {
                 log.add_error(__FILE__, __LINE__, "Error: checker has returned unexpected result!", log.gen_data("Result code", i2s(ex)));
-                result = ST_SERVER_ERROR;
+                result = ST_CHECKER_ERROR;
                 ok = false;
             }
         }

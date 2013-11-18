@@ -93,13 +93,12 @@ bool CSubmit::test()
         status = ST_INVALID_PROBLEM;
         return false;
     }
-    int st;
+    int st = ST_SERVER_ERROR;
     int no_ml = lcfgi(str_lowercase(lang) + ".no_memory_limit");
     if (no_ml)
         problem.set_no_memory_limit();
     bool res = problem.run_tests(run_cmd, lang, st, max_time, max_memory, test_num_failed, need_info ? (&info) : NULL, acm, test_results);
-    if (!res) status = ST_SERVER_ERROR;
-    else status = st;
+    status = st;
     if (problem.is_fatal_error()) fatal_error = true;
     return res;
 }

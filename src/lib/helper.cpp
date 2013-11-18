@@ -21,6 +21,7 @@ string status_to_str(int status)
     case ST_RUNNING: return "Running";
     case ST_OUTPUT_LIMIT: return "Output limit exceeded";
     case ST_INVALID_LANG: return "Invalid language";
+    case ST_CHECKER_ERROR: return "Checker error";
     default: return "Unknown";
     }
 }
