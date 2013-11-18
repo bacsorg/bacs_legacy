@@ -146,7 +146,21 @@ int main(int argc, char **argv)
     }
     log.add("Connected to database.");
 
-    check_thread_proc();
+    if (argc == 1)
+    {
+        check_thread_proc();
+    }
+    else
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            if (!test_submit(argv[i]))
+            {
+                log.add_error(__FILE__, __LINE__, "Terminating check thread due to fatal error!");
+                return i;
+            }
+        }
+    }
 
     int exit_code = 0;
     db.close();
