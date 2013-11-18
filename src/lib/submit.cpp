@@ -62,7 +62,7 @@ bool CSubmit::compile()
     if (lcfg(str_lowercase(lang) + ".name") == "")
     {
         log.add("Error: unknown language!", log.gen_data("Language ID", lang));
-        status = ST_SERVER_ERROR;
+        status = ST_INVALID_LANG;
         return false;
     }
     if (!src_file.create(solution)) {
