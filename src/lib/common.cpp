@@ -158,8 +158,13 @@ int compile_source(cstr src_file, cstr lang, CTempFile *run_file, string &run_cm
     string pref = str_lowercase(lang) + ".";
     int exit_code;
     string cmd = lang_str("compile", lang, src_file);
-    if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout) != RUN_OK)
+    switch (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout, cf_compiler_memoryout))
     {
+    case RUN_OK:
+        break;
+    case RUN_TIMEOUT:
+        return COMPILE_TIME_LIMIT;
+    default:
         log.add("Error: cannot run compiler!", log.gen_data("Language", lcfg(pref + "name"), "Command string", cmd));
         return COMPILE_FAILED;
     }

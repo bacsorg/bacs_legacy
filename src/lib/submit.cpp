@@ -74,12 +74,19 @@ bool CSubmit::compile()
     if (res != COMPILE_OK)
     {
         src_file.erase();
-        if (res == COMPILE_ERROR)
+        switch (res)
         {
+        case COMPILE_ERROR:
             status = ST_COMPILE_ERROR;
             need_info = true;
+            break;
+        case COMPILE_TIME_LIMIT:
+            status = ST_COMPILE_TIME_LIMIT;
+            need_info = true;
+            break;
+        default:
+            status = ST_SERVER_ERROR;
         }
-        else status = ST_SERVER_ERROR;
         return false;
     }
     return true;
