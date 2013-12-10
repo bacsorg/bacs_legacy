@@ -109,7 +109,8 @@ class CTest
 {
 public:
     int id;
-    string file_in, file_out;
+    string file_in;
+    boost::optional<string> file_out;
     boost::optional<boost::filesystem::path> verbose;
     static int parse_id(cstr fn);
     CTest(cstr _file_in);

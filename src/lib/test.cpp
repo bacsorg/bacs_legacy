@@ -1,5 +1,7 @@
 #include "common.hpp"
 
+#include <boost/filesystem/operations.hpp>
+
 namespace bacs {
 
 int CTest::parse_id(cstr fn)
@@ -14,6 +16,8 @@ CTest::CTest(cstr _file_in)
 {
     file_in = _file_in;
     file_out = file_in.substr(0, file_in.find_last_of('.')) + ".out";
+    if (!boost::filesystem::exists(*file_out))
+        file_out = boost::none;
     id = parse_id(file_in);
 }
 

@@ -78,7 +78,8 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
                 BOOST_ASSERT(*verbose_path == tt.verbose->parent_path());
             boost::filesystem::create_directories(*tt.verbose);
             boost::filesystem::copy_file(tt.file_in, *tt.verbose / "input");
-            boost::filesystem::copy_file(tt.file_out, *tt.verbose / "hint");
+            if (tt.file_out)
+                boost::filesystem::copy_file(*tt.file_out, *tt.verbose / "hint");
         }
         if (acm)
         {
@@ -268,7 +269,8 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
     if (res == RUN_OK && ex == 0)
     {
         if (info) *info = s_out.read(cfgi("general.max_info_size"));
-        string checker_cmd = format("%s %s %s %s", checker.c_str(), tt.file_in.c_str(), s_file_out.c_str(), tt.file_out.c_str());
+        const std::string tt_file_out = tt.file_out ? *tt.file_out : "/dev/null";
+        string checker_cmd = format("%s %s %s %s", checker.c_str(), tt.file_in.c_str(), s_file_out.c_str(), tt_file_out.c_str());
 //      log.add_error(__FILE__, __LINE__, "Start checker!", log.gen_data("Run command", checker_cmd));
         string checker_out;
         int res2 = run(checker_cmd, &ex, true, "", checker_out, cf_checker_timeout);
