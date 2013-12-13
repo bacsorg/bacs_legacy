@@ -96,21 +96,17 @@ bool CProblem::run_tests(cstr run_cmd, cstr src_lang, int &result, double &max_t
         }
         else
         {
-            if (tests_for_check.empty() ||
-                (i < (int)tests_for_check.size() && tests_for_check[i] == '1'))
-            {
-                if (!run_test(tt, run_cmd, src_lang, result, time_used, memory_used, info))
-                    return false;
-                if (time_used > max_time)
-                    max_time = time_used;
-                if (memory_used > max_memory)
-                    max_memory = memory_used;
-                if (test_results.size())
-                    test_results.push_back(',');
-                if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
-                    first_res = result;
-                test_results+=i2s(result);
-            }
+            if (!run_test(tt, run_cmd, src_lang, result, time_used, memory_used, info))
+                return false;
+            if (time_used > max_time)
+                max_time = time_used;
+            if (memory_used > max_memory)
+                max_memory = memory_used;
+            if (test_results.size())
+                test_results.push_back(',');
+            if (result != ST_ACCEPTED && first_res == ST_ACCEPTED)
+                first_res = result;
+            test_results+=i2s(result);
         }
         if (tt.verbose)
         {

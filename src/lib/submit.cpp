@@ -17,13 +17,13 @@ CSubmit::CSubmit(cstr _sid)
     info = "";
     max_time = 0; max_memory = 0;
     test_num_failed = -1;
-    DBRow rr = db_qres(format("select problem_id, lang, solution, need_info, acm, school_result from submit where submit_id = %s", sid.c_str()));
+    DBRow rr = db_qres(format("select problem_id, lang, solution, need_info, acm from submit where submit_id = %s", sid.c_str()));
     if (rr.empty()) {
         not_found = true;
     }
     else
     {
-        pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1"); acm=rr[4]!="0"; tests_for_check = rr[5];
+        pid = rr[0]; lang = rr[1]; solution = rr[2]; need_info = (rr[3] == "1"); acm=rr[4]!="0";
     }
 }
 

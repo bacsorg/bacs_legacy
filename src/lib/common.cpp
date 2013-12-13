@@ -31,7 +31,6 @@ uid_t cf_uid;
 gid_t cf_gid;
 
 string nstr;
-string tests_for_check;
 
 string dbg_submit_id = "";
 

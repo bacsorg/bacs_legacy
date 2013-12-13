@@ -45,7 +45,6 @@ extern uid_t cf_uid;
 extern gid_t cf_gid;
 
 extern string nstr;
-extern string tests_for_check;
 
 extern string dbg_submit_id;
 
