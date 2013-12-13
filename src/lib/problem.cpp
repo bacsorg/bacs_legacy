@@ -178,7 +178,7 @@ bool CProblem::init_tests(cstr submit_id)
         {
             const bool verbose_test = db_qres0(
                     format(
-                        "select 1 from verbose_test where submit_id = %s AND (test_id = %d OR test_id = NULL)",
+                        "select 1 from verbose_test where submit_id = %s AND (test_id = %d OR test_id is NULL)",
                         submit_id.c_str(),
                         t.id
                     )
