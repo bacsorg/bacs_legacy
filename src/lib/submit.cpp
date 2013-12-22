@@ -126,9 +126,11 @@ bool CSubmit::cleanup()
 
 bool CSubmit::store_result()
 {
-    if (info.size() > 1000 && status == ST_SERVER_ERROR)
+    constexpr std::size_t MAX_INFO_SIZE = 16384;
+
+    if (info.size() > MAX_INFO_SIZE)
     {
-        info = info.substr(0, 1000);
+        info = info.substr(0, MAX_INFO_SIZE);
         info += "\n... too many characters";
     }
     string s_info = need_info ? format(", info = '%s'", db.escape(info).c_str()) : "";
