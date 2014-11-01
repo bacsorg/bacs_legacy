@@ -214,6 +214,7 @@ bool CProblem::init_iofiles()
 bool CProblem::init_checker()
 {
     checker = cf.get("checker");
+    checker_return = cf.get("checker_return");
     string dir = cfg("general.problem_archive_dir") + "/" + id + "/checker/";
     string fn;
     if (checker == "") {
@@ -231,6 +232,7 @@ bool CProblem::init_checker()
     if (checker == "default" || checker == "")
     {
         checker = cfg("general.default_checker");
+        checker_return = "bacs_legacy";
         if (!file_exists(checker)) {
             log.add("Error: default checker does not exist!");
             return false;
@@ -245,6 +247,55 @@ bool CProblem::init_checker()
         }
     }
     return true;
+}
+
+int CProblem::get_checker_result(const int ex) const
+{
+    if (checker_return == "bacs_legacy")
+    {
+        switch (ex)
+        {
+        case CHECK_RES_OK:
+            return ST_ACCEPTED;
+        case CHECK_RES_WA:
+        case CHECK_RES_WA_OLD:
+            return ST_WRONG_ANSWER;
+        case CHECK_RES_PE:
+            return ST_PRESENTATION_ERROR;
+        default:
+            return ST_CHECKER_ERROR;
+        }
+    }
+    else if (checker_return == "ejudge")
+    {
+        switch (ex)
+        {
+        case 0:
+            return ST_ACCEPTED;
+        case 5:
+            return ST_WRONG_ANSWER;
+        case 4:
+            return ST_PRESENTATION_ERROR;
+        default:
+            return ST_CHECKER_ERROR;
+        }
+    }
+    else if (checker_return == "testlib")
+    {
+        switch (ex)
+        {
+        case 0:
+            return ST_ACCEPTED;
+        case 1:
+            return ST_WRONG_ANSWER;
+        case 2:
+            return ST_PRESENTATION_ERROR;
+        default:
+            return ST_CHECKER_ERROR;
+        }
+    }
+    log.add_error(__FILE__, __LINE__, "Error: unexpected checker_error!", log.gen_data("checker_return", checker_return));
+    return ST_CHECKER_ERROR;
 }
 
 bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &result, double &time_used, double &memory_used, string *info)
@@ -294,14 +345,10 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
                 fout.close();
             }
             if (info && checker_out != "") *info += "\n === CHECKER OUTPUT ===\n" + checker_out;
-            if (ex == CHECK_RES_OK) result = ST_ACCEPTED;
-            else if (ex == CHECK_RES_WA || ex == CHECK_RES_WA_OLD) result = ST_WRONG_ANSWER;
-            else if (ex == CHECK_RES_PE) result = ST_PRESENTATION_ERROR;
-            else {
+            result = get_checker_result(ex);
+            ok = result != ST_CHECKER_ERROR;
+            if (!ok)
                 log.add_error(__FILE__, __LINE__, "Error: checker has returned unexpected result!", log.gen_data("Result code", i2s(ex)));
-                result = ST_CHECKER_ERROR;
-                ok = false;
-            }
         }
     }
     else

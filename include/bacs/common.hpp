@@ -124,9 +124,11 @@ class CProblem
     string input_fn, output_fn;
     vector <CTest> test;
     string checker;
+    string checker_return;
     bool init_checker();
     bool init_iofiles();
     bool init_tests(cstr submit_id);
+    int get_checker_result(const int ex) const;
     CCfgEngine cf;
 public:
     void set_no_memory_limit();
