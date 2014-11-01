@@ -149,16 +149,7 @@ bool CSubmit::store_result()
 
 bool CSubmit::security_check()
 {
-    char *buf = new char[solution.length() + 1];
-    strcpy(buf, solution.c_str());
-    char buf_info[256];
-    bool res = SecurityCheck(buf, lang[0], buf_info, true);
-    delete [] buf;
-    if (!res && need_info)
-    {
-        info = buf_info;
-    }
-    return res;
+    return true;
 }
 
 } // bacs

@@ -16,7 +16,6 @@
 #include "db.hpp"
 #include "tempfiles.hpp"
 #include "run.hpp"
-#include "legacy.hpp"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/optional.hpp>
