@@ -285,15 +285,13 @@ bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &resul
         {
             if (tt.verbose)
             {
+                bunsan::filesystem::ofstream fout(*tt.verbose / "checker_output");
+                BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fout)
                 {
-                    bunsan::filesystem::ofstream fout(*tt.verbose / "checker_output");
-                    BUNSAN_FILESYSTEM_FSTREAM_WRAP_BEGIN(fout)
-                    {
-                        fout << checker_out;
-                    }
-                    BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fout)
-                    fout.close();
+                    fout << checker_out;
                 }
+                BUNSAN_FILESYSTEM_FSTREAM_WRAP_END(fout)
+                fout.close();
             }
             if (info && checker_out != "") *info += "\n === CHECKER OUTPUT ===\n" + checker_out;
             if (ex == CHECK_RES_OK) result = ST_ACCEPTED;
