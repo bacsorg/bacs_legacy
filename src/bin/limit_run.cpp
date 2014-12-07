@@ -139,8 +139,8 @@ int main(int argn, char ** args)
 
         rusage lim;
         int status = 0;
-            timespec nano_ts;
-            int step = 200;
+        timespec nano_ts;
+        int step = 200;
         nano_ts.tv_nsec = step * 1000000;
         nano_ts.tv_sec = 0;
         timespec st;
@@ -192,26 +192,20 @@ int main(int argn, char ** args)
             result = RUN_OK;
             exit_code = WEXITSTATUS(status);
         }
-        else
-        if (WIFSIGNALED(status))
+        else if (WIFSIGNALED(status))
         {
-            int term_code = WTERMSIG(status);
-/*          if (term_code == SIGKILL)
+            switch (WTERMSIG(status))
             {
-                result = RUN_OK;
-            }
-            else
-*/          if (term_code == SIGXCPU || term_code == SIGALRM ||
-                term_code == SIGVTALRM || term_code == SIGPROF)
-            {
+            case SIGXCPU:
+            case SIGALRM:
+            case SIGVTALRM:
+            case SIGPROF:
                 result = RUN_TIMEOUT;
-            }
-            else if (term_code == SIGXFSZ)
-            {
+                break;
+            case SIGXFSZ:
                 result = RUN_OUTPUT_LIMIT;
-            }
-            else
-            {
+                break;
+            default:
                 result = RUN_ABNORMAL_EXIT;
             }
         }
@@ -224,8 +218,7 @@ int main(int argn, char ** args)
         {
             result = RUN_TIMEOUT;
         }
-        else
-        if (memory_used >= memory_limit && memory_limit != 0)
+        else if (memory_used >= memory_limit && memory_limit != 0)
         {
             result = RUN_OUT_OF_MEMORY;
         }
@@ -281,4 +274,3 @@ int main(int argn, char ** args)
 
     return 0;
 }
-
