@@ -200,7 +200,10 @@ int main(int argn, char ** args)
             case SIGALRM:
             case SIGVTALRM:
             case SIGPROF:
-                result = RUN_TIMEOUT;
+                if (time_used >= time_limit && time_limit != 0)
+                    result = RUN_TIMEOUT;
+                else
+                    result = RUN_REALTIMEOUT; // system time
                 break;
             case SIGXFSZ:
                 result = RUN_OUTPUT_LIMIT;
@@ -246,7 +249,10 @@ int main(int argn, char ** args)
         }
         if (time_limit)
         {
-            lim.rlim_cur = lim.rlim_max = time_limit/1000+1;
+            lim.rlim_cur = lim.rlim_max = time_limit / 1000 + 1;
+            // hard limit is increased
+            // to receive soft limit signal
+            ++lim.rlim_max;
             setrlimit(RLIMIT_CPU, &lim);
         }
         {
