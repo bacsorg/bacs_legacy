@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     int res = 0, i;
     if (argc<2)
     {
-        fprintf(stderr, "Error: Argc(%d) != 2, run 'clean [dirs...]'\n", argc);
+        fprintf(stderr, "Error: Argc(%d) != 2, run 'wipe [dirs...]'\n", argc);
         return 1;
     }
     for (i = 1; i<argc; ++i)

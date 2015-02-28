@@ -55,7 +55,7 @@ max_run_out_size=64000000
 max_run_idle_time=10000
 
 ping_period=10
-ping_uri=http://statistic.bacs.cs.istu.ru/Handler.ashx
+;ping_uri=http://statistic.bacs.cs.istu.ru/Handler.ashx
 
 bunsan_repository_config=$bunsan_pm_config
 repository_prefix=bacs/problem/
@@ -110,7 +110,7 @@ dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [g]
 name=GNU C++ (same)
@@ -118,7 +118,7 @@ dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [1]
 name=C++ 11
@@ -126,7 +126,7 @@ dir=$dst
 compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [c]
 name=C
@@ -134,7 +134,7 @@ dir=$dst
 compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [p]
 name=FPC (Delphi mode)
@@ -143,7 +143,7 @@ compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{s
 tmpfile={src_noext}.o
 exefile={src}.exe
 run={src}.exe
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [f]
 name=FPC (FPC mode)
@@ -152,7 +152,7 @@ compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}
 tmpfile={src_noext}.o
 exefile={src}.exe
 run={src}.exe
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [j]
 name=Java
@@ -161,7 +161,7 @@ compile={dir}/java_compile {src} Main.java
 exefile={src}.dir/Main.class
 ;no_memory_limit=1
 run=$dst/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
-clean=$dst/clean {src}.dir {dir}/Test/
+clean=$dst/wipe {src}.dir {dir}/Test/
 
 [t]
 name=Python3
@@ -169,7 +169,7 @@ dir=$dst
 compile=$sources/src/bin/py3_compile.py {src} {src}.py
 exefile={src}.py
 run=$(which python3) {src}.py
-clean=$dst/clean {dir}/Test/
+clean=$dst/wipe {dir}/Test/
 
 [#]
 name=Mono C#
