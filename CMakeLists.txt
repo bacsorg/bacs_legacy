@@ -15,7 +15,6 @@ bunsan_add_shared_library(${PROJECT_NAME}
     src/lib/log.cpp
     src/lib/util.cpp
     src/lib/common.cpp
-    src/lib/pipes.cpp
     src/lib/problem.cpp
     src/lib/config.cpp
     src/lib/submit.cpp
