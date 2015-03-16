@@ -298,7 +298,13 @@ int CProblem::get_checker_result(const int ex) const
     return ST_CHECKER_ERROR;
 }
 
-bool CProblem::run_test(const CTest &tt, cstr run_cmd, cstr src_lang, int &result, double &time_used, double &memory_used, string *info)
+bool CProblem::run_test(const CTest &tt,
+                        cstr run_cmd,
+                        cstr /*src_lang*/,
+                        int &result,
+                        double &time_used,
+                        double &memory_used,
+                        string *info)
 {
     int t_used, m_used;
     string s_file_out;

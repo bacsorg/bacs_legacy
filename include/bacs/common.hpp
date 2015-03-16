@@ -1,10 +1,8 @@
 #pragma once
 
-#define _XOPEN_SOURCE 600
+#include "def.hpp"
 
 #include "bunsan/pm/compatibility/repository.hpp"
-
-#define _CRT_SECURE_NO_DEPRECATE
 
 #include <memory>
 #include <stdio.h>

@@ -1,7 +1,6 @@
 #pragma once
 
-#define _CRT_SECURE_NO_DEPRECATE
-#define _XOPEN_SOURCE 600
+#include "def.hpp"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -14,7 +13,6 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "def.hpp"
 #include "util.hpp"
 #include "log.hpp"
 #include "tempfiles.hpp"

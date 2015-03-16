@@ -8,6 +8,8 @@
 
 int rm_funct(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
 {
+    (void) sb;
+    (void) ftwbuf;
     int ret;
     switch (typeflag)
     {

@@ -1,6 +1,8 @@
 #pragma once
 
-#define _CRT_SECURE_NO_DEPRECATE
+#ifndef _XOPEN_SOURCE
+#   define _XOPEN_SOURCE 600
+#endif
 
 #include <string>
 #include <sstream>
@@ -11,7 +13,7 @@ namespace bacs {
 
 using namespace std;
 
-typedef const string & cstr;
+typedef const string &cstr;
 
 #define VERSION "2.3.alpha Linux"
 

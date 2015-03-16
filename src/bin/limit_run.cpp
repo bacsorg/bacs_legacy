@@ -1,7 +1,10 @@
+#ifndef _XOPEN_SOURCE
+#   define _XOPEN_SOURCE 600
+#endif
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#define _XOPEN_SOURCE 600
 
 #include <stdio.h>
 #include <string>
