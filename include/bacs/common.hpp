@@ -45,7 +45,7 @@ extern string nstr;
 
 extern string dbg_submit_id;
 
-extern std::auto_ptr<bunsan::pm::compatibility::repository> repository;
+extern std::unique_ptr<bunsan::pm::compatibility::repository> repository;
 
 class CSubmit;
 class CProblem;

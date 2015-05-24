@@ -34,7 +34,7 @@ string nstr;
 
 string dbg_submit_id = "";
 
-std::auto_ptr<bunsan::pm::compatibility::repository> repository;
+std::unique_ptr<bunsan::pm::compatibility::repository> repository;
 
 bool check_new_submits()
 {
@@ -143,7 +143,7 @@ bool init_config()
     cf_langs_config = cfg("langs.config");
     cf_uid = cfgi("general.uid");
     cf_gid = cfgi("general.gid");
-    repository.reset(new bunsan::pm::compatibility::repository(cfg("general.bunsan_repository_config")));
+    repository = std::make_unique<bunsan::pm::compatibility::repository>(cfg("general.bunsan_repository_config"));
     if (!langs_config.init(cf_langs_config))
     {
         fprintf(stderr, "Fatal error: cannot read langs configuration! Config file: %s\n", cf_langs_config.c_str());
