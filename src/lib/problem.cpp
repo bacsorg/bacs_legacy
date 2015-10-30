@@ -280,7 +280,7 @@ int CProblem::get_checker_result(const int ex) const
             return ST_CHECKER_ERROR;
         }
     }
-    else if (checker_return == "testlib")
+    else if (checker_return == "testlib" || checker_return == "none")
     {
         switch (ex)
         {
