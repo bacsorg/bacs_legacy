@@ -107,7 +107,7 @@ cat >"langs.conf" <<EOF
 [+]
 name=C++ (gnu)
 dir=$dst
-compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
+compile=$(which g++) ${CXXFLAGS} -std=c++03 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
 clean=$dst/wipe {dir}/Test/
@@ -115,7 +115,7 @@ clean=$dst/wipe {dir}/Test/
 [g]
 name=GNU C++ (same)
 dir=$dst
-compile=$(which c++) ${CXXFLAGS} -x c++ {src} -o{src}.o
+compile=$(which g++) ${CXXFLAGS} -std=c++03 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
 clean=$dst/wipe {dir}/Test/
@@ -123,7 +123,7 @@ clean=$dst/wipe {dir}/Test/
 [1]
 name=C++ 11
 dir=$dst
-compile=$(which c++) ${CXXFLAGS} -std=c++0x -x c++ {src} -o{src}.o
+compile=$(which g++) ${CXXFLAGS} -std=c++11 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
 clean=$dst/wipe {dir}/Test/
@@ -131,7 +131,7 @@ clean=$dst/wipe {dir}/Test/
 [c]
 name=C
 dir=$dst
-compile=$(which c++) ${CXXFLAGS} -x c {src} -o{src}.o
+compile=$(which gcc) ${CXXFLAGS} -std=c90 -x c {src} -o{src}.o
 exefile={src}.o
 run={src}.o
 clean=$dst/wipe {dir}/Test/
