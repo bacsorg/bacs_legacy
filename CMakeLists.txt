@@ -46,10 +46,18 @@ bunsan_add_executable(java_compile src/bin/java_compile.c)
 bunsan_add_executable(wipe src/bin/wipe.c)
 bunsan_add_executable(java_run src/bin/java_run.c)
 
+macro(bacs_install_utils)
+    bunsan_install_targets_prepare(${ARGN})
+    install(TARGETS ${ARGN}
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/bacs/legacy)
+endmacro()
+
 bunsan_install_headers()
 bunsan_install_targets(
     ${PROJECT_NAME}
     ${PROJECT_NAME}d
+)
+bacs_install_utils(
     limit_run
     java_compile
     wipe
