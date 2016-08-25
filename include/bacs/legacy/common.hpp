@@ -32,8 +32,6 @@ extern int cf_job_query_period;
 extern int cf_max_idle_time;
 extern int cf_ping_period;
 extern string cf_ping_uri;
-extern int cf_compile_checkers;
-extern int cf_check_solutions;
 extern string cf_langs_config;
 extern string cf_verbose_tests_copy;
 extern string cf_verbose_tests_server;
@@ -71,9 +69,6 @@ bool tests_sort_func(cstr f1, cstr f2);
 
 bool check_iofile_name(cstr fn);
 
-bool check_new_check_compiles();
-string capture_new_checker_compilation();
-void compile_checker(const string &sid);
 string capture_new_submit();
 
 class CSubmit {

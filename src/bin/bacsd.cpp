@@ -55,16 +55,7 @@ void check_thread_proc() {
   for (;;) {
     bool found = false;
     if (short_wait_term()) return;
-    if (cf_compile_checkers && check_new_check_compiles()) {
-      need_announce = true;
-      found = true;
-      string sid = capture_new_checker_compilation();
-      if (sid != "") {
-        compile_checker(sid);
-      }
-    }
-    if (short_wait_term()) return;
-    if (cf_check_solutions && check_new_submits()) {
+    if (check_new_submits()) {
       need_announce = true;
       found = true;
       string sid = capture_new_submit();

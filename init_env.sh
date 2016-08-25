@@ -11,11 +11,6 @@ then
     sources="$PWD/$sources"
 fi
 
-# default config
-cf_compile_checkers=1
-cf_check_solutions=1
-# end of default config
-
 config="${1?You have to specify config file}"
 . "$config"
 shift
@@ -66,9 +61,6 @@ verbose_tests_server=${verbose_tests_server}
 
 order=${cf_order}
 
-compile_checkers=$cf_compile_checkers
-check_solutions=$cf_check_solutions
-
 default_time_limit=10
 default_memory_limit=128
 
@@ -76,7 +68,6 @@ limit_run_exe=$dst/limit_run
 limit_run_result_file=$dst/lim_run_results.txt
 temp_dir=$dst/Temp
 test_dir=$dst/Test
-b2_compiler=$sources/b2_compiler
 problem_archive_dir=$dst/Archive
 default_checker=$dst/checkdef
 

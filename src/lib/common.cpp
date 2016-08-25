@@ -15,8 +15,6 @@ int cf_ping_period;
 string cf_ping_uri;
 
 int cf_order;
-int cf_compile_checkers;
-int cf_check_solutions;
 string cf_langs_config;
 
 string cf_verbose_tests_copy;
@@ -64,47 +62,6 @@ string capture_new_submit() {
   return sid;
 }
 
-bool check_new_check_compiles() {
-  string q = db_qres0("select 1 from compile_checkers where state = 0 limit 1");
-  return q == "1";
-}
-
-string capture_new_checker_compilation() {
-  if (!lock_table()) {
-    log.add_error(__FILE__, __LINE__, "Error: cannot lock table 'submit'!");
-    return "";
-  }
-  string sid =
-      db_qres0("select check_id from compile_checkers where state = 0 limit 1");
-  if (sid != "")
-    db_query(
-        format("update compile_checkers set state = %d where check_id = %s",
-               STATE_COMPILING, sid.c_str()));
-  unlock_table();
-  return sid;
-}
-
-void compile_checker(const string &sid) {
-  string rr = db_qres0(
-      format("select problem_id from compile_checkers where check_id = %s",
-             sid.c_str()));
-  if (rr == "") {
-    return;
-  } else {
-    log.add("Compiling checker for problem: " + rr);
-    int exit_code;
-    string error_log;
-    string cmd = cfg("general.b2_compiler") + " " +
-                 cfg("general.problem_archive_dir") + "/" + rr;
-    if (run(cmd, &exit_code, true, "", error_log, cf_compiler_timeout) !=
-        RUN_OK) {
-      log.add(("Error: cannot compile checker!" + cmd + "\n" + error_log));
-    }
-    db_query(format("update compile_checkers set state=1 where check_id = %s",
-                    sid.c_str()));
-  }
-}
-
 bool init_config() {
   if (!config.init(CONFIG_FILE_NAME)) {
     fprintf(stderr, "Fatal error: cannot read configuration! Config file: %s\n",
@@ -131,8 +88,6 @@ bool init_config() {
   }
   cf_verbose_tests_copy = cfg("general.verbose_tests_copy");
   cf_verbose_tests_server = cfg("general.verbose_tests_server");
-  cf_compile_checkers = cfgi("general.compile_checkers");
-  cf_check_solutions = cfgi("general.check_solutions");
   cf_langs_config = cfg("langs.config");
   cf_uid = cfgi("general.uid");
   cf_gid = cfgi("general.gid");
