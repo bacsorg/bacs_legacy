@@ -3,6 +3,8 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #define _CRT_RAND_S
 
+#include <bacs/legacy/def.hpp>
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
@@ -12,7 +14,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include "def.hpp"
 
 namespace bacs {
 

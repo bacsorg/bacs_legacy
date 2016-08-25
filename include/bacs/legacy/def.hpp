@@ -4,16 +4,16 @@
 #   define _XOPEN_SOURCE 600
 #endif
 
+#include <bunsan/stream_enum.hpp>
+
 #include <string>
 #include <sstream>
-
-#include <bunsan/stream_enum.hpp>
 
 namespace bacs {
 
 using namespace std;
 
-typedef const string &cstr;
+using cstr = const string &;
 
 #define VERSION "2.3.alpha Linux"
 
