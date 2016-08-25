@@ -4,11 +4,19 @@ set -e
 CFLAGS="-O2 -fno-stack-limit"
 CXXFLAGS="${CFLAGS}"
 
-sources="$(dirname "$0")"
-
-if [[ ${sources:0:1} != / ]]
+thisprefix="$(dirname "$0")"
+if [[ ${thisprefix:0:1} != / ]]
 then
-    sources="$PWD/$sources"
+    thisprefix="$PWD/$thisprefix"
+fi
+if [[ -f $thisprefix/CMakeLists.txt ]]
+then
+    # source code
+    binprefix="$thisprefix/build"
+    utilprefix="$thisprefix/build"
+else
+    binprefix="$thisprefix"
+    utilprefix="$(dirname "$thisprefix")/lib/bacs/legacy"
 fi
 
 config="${1?You have to specify config file}"
@@ -22,16 +30,14 @@ do
     then
         dst="$PWD/$dst"
     fi
-    if false #[ -e "$dst" ]
-    then
-        echo "Remove \"$dst\" if you want to init environment in it" >&2
-    else
-        mkdir -p "$dst"
-        cd "$dst"
-        cmake "$sources"
-        make -j6
-        mkdir -p Test Temp Archive
-        cat >java.policy <<EOF
+    mkdir -p "$dst"
+    mkdir -p "$dst/Test" "$dst/Temp" "$dst/Archive"
+    ln -sf "$binprefix/bacsd" "$dst/bacsd"
+    for util in limit_run java_compile wipe java_run py3_compile.py
+    do
+        ln -sf "$utilprefix/$util" "$dst/$util"
+    done
+    cat >"$dst/java.policy" <<EOF
 grant {
     permission java.io.FilePermission "*", "read,write";
 };
@@ -157,7 +163,7 @@ clean=$dst/wipe {src}.dir {dir}/Test/
 [t]
 name=Python3
 dir=$dst
-compile=$sources/src/bin/py3_compile.py {src} {src}.py
+compile={dir}/py3_compile.py {src} {src}.py
 exefile={src}.py
 run=$(which python3) {src}.py
 clean=$dst/wipe {dir}/Test/
@@ -170,6 +176,4 @@ exefile={src_noext}.exe
 run=$(which mono) {src_noext}.exe
 
 EOF
-    cd ..
-    fi
 done

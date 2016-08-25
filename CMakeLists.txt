@@ -63,4 +63,11 @@ bacs_install_utils(
     wipe
     java_run
 )
+install(PROGRAMS src/bin/py3_compile.py
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/bacs/legacy)
+file(COPY src/bin/py3_compile.py
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+install(PROGRAMS init_env.sh
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+        RENAME bacs-legacy-makeenv)
 bunsan_install_project()
