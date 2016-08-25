@@ -131,7 +131,7 @@ clean=$dst/wipe {dir}/Test/
 [c]
 name=C
 dir=$dst
-compile=$(which gcc) ${CXXFLAGS} -std=c90 -x c {src} -o{src}.o
+compile=$(which gcc) ${CFLAGS} -std=c90 -x c {src} -o{src}.o
 exefile={src}.o
 run={src}.o
 clean=$dst/wipe {dir}/Test/
