@@ -178,44 +178,6 @@ compile=$(which dmcs) -out:{src_noext}.exe {src}
 exefile={src_noext}.exe
 run=$(which mono) {src_noext}.exe
 
-;[c]
-;name=C
-;dir=C:\Bacs2\VC
-;compile={dir}\Bin\\cl.exe /nologo /EHsc /O2 /Ox /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fo"{src}.obj" /Fe"{src}.exe" /I"{dir}\Include" /Tc"{src}" /link /nologo /LIBPATH:"{dir}\Lib"
-;compile={dir}\Bin\\cl.exe /nologo /O2 /Ox /Fo"{src}.obj" /Fe"{src}.exe" /I"{dir}\Include" /Tc"{src}" /link /nologo /LIBPATH:"{dir}\Lib"
-;tmpfile={src}.obj
-;exefile={src}.exe
-;run={src}.exe
-
-;[d]
-;name=Delphi
-;dir=C:\Program Files (x86)\Borland\Delphi7
-;compile={dir}\Bin\dcc32.exe -Q -CC -$I+,Q-,R-,X+ -U"{dir}\Lib" "{src}"
-;exefile={src_noext}.exe
-;run={src_noext}.exe
-
-;[l]
-;name=Lisp
-;dir=C:\Bacs2\CLisp
-;compile={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q -c "{src}" -o "{src}.fas"
-;exefile={src}.fas
-;run={dir}\lisp.exe -ansi -B "{dir}\\clisp" -M "{dir}\myinit.mem" -q -q "{src}.fas"
-
-
-;[g]
-;name=GNU C++
-;dir=C:\MinGW\MinGW\Bin
-;compile={dir}\g++.exe -O2 -x c++ "{src}" -o "{src}.exe"
-;exefile={src}.exe
-;run={src}.exe
-
-;[#]
-;name=C#
-;dir=C:\WINDOWS\Microsoft.NET\Framework64\v2.0.50727
-;compile={dir}\csc.exe /nologo /t:exe /checked- /debug- /platform:x86 /o /out:"{src}.exe" "{src}"
-;exefile={src}.exe
-;run={src}.exe
-
 EOF
     cd ..
     fi
