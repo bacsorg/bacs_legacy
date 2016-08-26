@@ -58,6 +58,7 @@ bunsan_install_targets(
     ${PROJECT_NAME}d
 )
 bacs_install_utils(
+    checkdef
     limit_run
     java_compile
     wipe

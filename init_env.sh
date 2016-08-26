@@ -33,7 +33,7 @@ do
     mkdir -p "$dst"
     mkdir -p "$dst/Test" "$dst/Temp" "$dst/Archive"
     ln -sf "$binprefix/bacsd" "$dst/bacsd"
-    for util in limit_run java_compile wipe java_run py3_compile.py
+    for util in checkdef limit_run java_compile wipe java_run py3_compile.py
     do
         ln -sf "$utilprefix/$util" "$dst/$util"
     done
