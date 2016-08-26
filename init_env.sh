@@ -43,7 +43,7 @@ grant {
 };
 
 EOF
-        cat >bacs2.conf <<EOF
+        cat >"$dst/bacs2.conf" <<EOF
 ; BACS2 Server configuration file
 
 [general]
@@ -100,7 +100,7 @@ config = $dst/langs.conf
 
 EOF
 
-cat >"langs.conf" <<EOF
+cat >"$dst/langs.conf" <<EOF
 [+]
 name=C++ (gnu)
 dir=$dst
