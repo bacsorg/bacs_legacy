@@ -93,8 +93,6 @@ int main(int argc, char **argv) {
   init_env();
   printf("BACS2 Server version %s\n", VERSION);
 
-  chdir(dir_from_filename(argv[0]));
-
   if (!init_config()) {
     return 1;
   }
