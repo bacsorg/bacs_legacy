@@ -175,5 +175,13 @@ compile=$(which dmcs) -out:{src_noext}.exe {src}
 exefile={src_noext}.exe
 run=$(which mono) {src_noext}.exe
 
+[logo-kturtle]
+name=Logo
+dir=$dst
+compile=$(which cp) {src} {src}.turtle
+exefile={src}.turtle
+run=$(which bacs.kturtle) --test {src}.turtle
+clean=$dst/wipe {dir}/Test/
+
 EOF
 done
