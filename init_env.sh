@@ -33,10 +33,6 @@ do
     mkdir -p "$dst"
     mkdir -p "$dst/Test" "$dst/Temp" "$dst/Archive"
     ln -sf "$binprefix/bacsd" "$dst/bacsd"
-    for util in checkdef limit_run java_compile wipe java_run py3_compile.py
-    do
-        ln -sf "$utilprefix/$util" "$dst/$util"
-    done
     cat >"$dst/java.policy" <<EOF
 grant {
     permission java.io.FilePermission "*", "read,write";
@@ -70,12 +66,12 @@ order=${cf_order}
 default_time_limit=10
 default_memory_limit=128
 
-limit_run_exe=$dst/limit_run
+limit_run_exe=$utilprefix/limit_run
 limit_run_result_file=$dst/lim_run_results.txt
 temp_dir=$dst/Temp
 test_dir=$dst/Test
 problem_archive_dir=$dst/Archive
-default_checker=$dst/checkdef
+default_checker=$utilprefix/checkdef
 
 uid=$UID
 gid=$GID
@@ -107,7 +103,7 @@ dir=$dst
 compile=$(which g++) ${CXXFLAGS} -std=c++03 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [g]
 name=GNU C++ (same)
@@ -115,7 +111,7 @@ dir=$dst
 compile=$(which g++) ${CXXFLAGS} -std=c++03 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [1]
 name=C++ 11
@@ -123,7 +119,7 @@ dir=$dst
 compile=$(which g++) ${CXXFLAGS} -std=c++11 -x c++ {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [c]
 name=C
@@ -131,7 +127,7 @@ dir=$dst
 compile=$(which gcc) ${CFLAGS} -std=c90 -x c {src} -o{src}.o
 exefile={src}.o
 run={src}.o
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [p]
 name=FPC (Delphi mode)
@@ -140,7 +136,7 @@ compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mdelphi {src} -o{s
 tmpfile={src_noext}.o
 exefile={src}.exe
 run={src}.exe
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [f]
 name=FPC (FPC mode)
@@ -149,24 +145,24 @@ compile=$(which fpc) -Cs\`echo '64*2^20-1025' | bc\` -Xt -O2 -Mfpc {src} -o{src}
 tmpfile={src_noext}.o
 exefile={src}.exe
 run={src}.exe
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [j]
 name=Java
 dir=$dst
-compile={dir}/java_compile {src} Main.java
+compile=$utilprefix/java_compile {src} Main.java
 exefile={src}.dir/Main.class
 ;no_memory_limit=1
-run=$dst/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
-clean=$dst/wipe {src}.dir {dir}/Test/
+run=$utilprefix/java_run -Djava.security.manager -Djava.security.policy={dir}/java.policy -classpath {src}.dir Main
+clean=$utilprefix/wipe {src}.dir {dir}/Test/
 
 [t]
 name=Python3
 dir=$dst
-compile={dir}/py3_compile.py {src} {src}.py
+compile=$utilprefix/py3_compile.py {src} {src}.py
 exefile={src}.py
 run=$(which python3) {src}.py
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 [#]
 name=Mono C#
@@ -181,7 +177,7 @@ dir=$dst
 compile=$(which cp) {src} {src}.turtle
 exefile={src}.turtle
 run=$(which bacs.kturtle) --test {src}.turtle
-clean=$dst/wipe {dir}/Test/
+clean=$utilprefix/wipe {dir}/Test/
 
 EOF
 done
